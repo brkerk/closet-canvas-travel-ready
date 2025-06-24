@@ -1,9 +1,11 @@
 
 import { useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, Sparkles, Loader2 } from "lucide-react";
+import { useGarmentAnalysis } from "@/hooks/useGarmentAnalysis";
 
 export const GarmentCapture = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageElement, setImageElement] = useState<HTMLImageElement | null>(null);
   const [garmentData, setGarmentData] = useState({
     name: "",
     brand: "",
@@ -12,14 +14,43 @@ export const GarmentCapture = () => {
     tags: "",
   });
 
+  const { analysis, isAnalyzing, error, analyzeImage, clearAnalysis } = useGarmentAnalysis();
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
+        const imageUrl = e.target?.result as string;
+        setSelectedImage(imageUrl);
+        
+        // Create image element for AI analysis
+        const img = new Image();
+        img.onload = () => {
+          setImageElement(img);
+        };
+        img.src = imageUrl;
       };
       reader.readAsDataURL(file);
+      clearAnalysis();
+    }
+  };
+
+  const handleAIAnalysis = async () => {
+    if (imageElement) {
+      await analyzeImage(imageElement);
+    }
+  };
+
+  const applyAIResults = () => {
+    if (analysis) {
+      setGarmentData(prev => ({
+        ...prev,
+        name: analysis.suggestedName,
+        color: analysis.color,
+        type: analysis.type,
+        tags: analysis.suggestedTags.join(", ")
+      }));
     }
   };
 
@@ -30,11 +61,12 @@ export const GarmentCapture = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Saving garment:", garmentData);
-    // Here you would save to your backend/database
     alert("Garment saved successfully!");
     
     // Reset form
     setSelectedImage(null);
+    setImageElement(null);
+    clearAnalysis();
     setGarmentData({
       name: "",
       brand: "",
@@ -63,13 +95,37 @@ export const GarmentCapture = () => {
                     alt="Selected garment"
                     className="w-32 h-40 sm:w-48 sm:h-64 object-cover mx-auto rounded-xl shadow-md"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setSelectedImage(null)}
-                    className="text-sm text-purple-600 hover:text-purple-800"
-                  >
-                    Change Photo
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setImageElement(null);
+                        clearAnalysis();
+                      }}
+                      className="text-sm text-purple-600 hover:text-purple-800"
+                    >
+                      Change Photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAIAnalysis}
+                      disabled={isAnalyzing || !imageElement}
+                      className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-lg text-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" />
+                          AI Analyze
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4">
@@ -91,6 +147,54 @@ export const GarmentCapture = () => {
               )}
             </div>
           </div>
+
+          {/* AI Analysis Results */}
+          {analysis && (
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-500" />
+                  AI Analysis Results
+                </h3>
+                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                  {Math.round(analysis.confidence * 100)}% confident
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                <div>
+                  <span className="text-gray-600">Type:</span> <span className="font-medium">{analysis.type}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Color:</span> <span className="font-medium">{analysis.color}</span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-gray-600">Suggested Name:</span> <span className="font-medium">{analysis.suggestedName}</span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-gray-600">Suggested Tags:</span> <span className="font-medium">{analysis.suggestedTags.join(", ")}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={applyAIResults}
+                className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600 transition-colors"
+              >
+                Apply AI Suggestions
+              </button>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p className="text-red-600 text-sm">
+                <strong>Analysis Error:</strong> {error}
+              </p>
+              <p className="text-red-500 text-xs mt-1">
+                You can still fill out the form manually.
+              </p>
+            </div>
+          )}
 
           {/* Form Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -177,14 +281,18 @@ export const GarmentCapture = () => {
         </form>
       </div>
 
-      {/* Quick Tips */}
+      {/* Enhanced Tips */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 sm:p-6 border border-blue-100">
-        <h3 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base">📸 Photo Tips</h3>
+        <h3 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-purple-500" />
+          AI-Powered Tips
+        </h3>
         <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
-          <li>• Use good lighting for clear photos</li>
-          <li>• Lay garments flat or hang them neatly</li>
+          <li>• Use good lighting for clear photos and better AI recognition</li>
+          <li>• Lay garments flat or hang them neatly for optimal analysis</li>
           <li>• Include the full garment in the frame</li>
           <li>• Use a neutral background when possible</li>
+          <li>• Let AI analyze your photo for automatic type and color detection!</li>
         </ul>
       </div>
     </div>
