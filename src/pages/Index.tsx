@@ -10,7 +10,7 @@ import { GarmentCapture } from "@/components/GarmentCapture";
 type ActiveTab = "catalog" | "closet" | "outfits" | "capture";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("catalog");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("closet");
 
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -23,16 +23,16 @@ const Index = () => {
       case "capture":
         return <GarmentCapture />;
       default:
-        return <GarmentCatalog />;
+        return <ClosetLayout />;
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
       <Header />
-      <main className="container mx-auto px-4 py-6 max-w-6xl">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-6xl">
         <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           {renderActiveComponent()}
         </div>
       </main>

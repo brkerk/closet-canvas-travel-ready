@@ -17,8 +17,8 @@ export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
   ];
 
   return (
-    <nav className="bg-white rounded-2xl p-2 shadow-lg border border-pink-100">
-      <div className="flex gap-2">
+    <nav className="bg-white rounded-2xl p-1.5 sm:p-2 shadow-lg border border-pink-100 sticky top-20 z-40">
+      <div className="flex gap-1 sm:gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -27,14 +27,14 @@ export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 ${
+              className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 rounded-xl transition-all duration-200 min-h-[3rem] ${
                 isActive
                   ? "bg-gradient-to-r from-pink-400 to-purple-500 text-white shadow-md"
                   : "text-gray-600 hover:bg-pink-50 hover:text-pink-600"
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium text-sm">{tab.label}</span>
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <span className="font-medium text-xs sm:text-sm leading-tight">{tab.label}</span>
             </button>
           );
         })}

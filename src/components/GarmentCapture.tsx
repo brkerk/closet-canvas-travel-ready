@@ -45,23 +45,23 @@ export const GarmentCapture = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Garment</h2>
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-100">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Add New Garment</h2>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">
               Garment Photo
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-400 transition-colors">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-8 text-center hover:border-purple-400 transition-colors">
               {selectedImage ? (
                 <div className="space-y-4">
                   <img
                     src={selectedImage}
                     alt="Selected garment"
-                    className="w-48 h-64 object-cover mx-auto rounded-xl shadow-md"
+                    className="w-32 h-40 sm:w-48 sm:h-64 object-cover mx-auto rounded-xl shadow-md"
                   />
                   <button
                     type="button"
@@ -72,12 +72,12 @@ export const GarmentCapture = () => {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <Camera className="w-16 h-16 text-gray-400 mx-auto" />
+                <div className="space-y-3 sm:space-y-4">
+                  <Camera className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto" />
                   <div>
-                    <p className="text-gray-600 mb-2">Upload a photo of your garment</p>
-                    <label className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl cursor-pointer hover:shadow-md transition-all">
-                      <Camera className="w-5 h-5 mr-2" />
+                    <p className="text-gray-600 mb-2 text-sm sm:text-base">Upload a photo of your garment</p>
+                    <label className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl cursor-pointer hover:shadow-md transition-all text-sm sm:text-base">
+                      <Camera className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Choose Photo
                       <input
                         type="file"
@@ -93,8 +93,8 @@ export const GarmentCapture = () => {
           </div>
 
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Garment Name
               </label>
@@ -102,7 +102,7 @@ export const GarmentCapture = () => {
                 type="text"
                 value={garmentData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 text-sm sm:text-base"
                 placeholder="e.g., Navy Blue Blazer"
                 required
               />
@@ -116,7 +116,7 @@ export const GarmentCapture = () => {
                 type="text"
                 value={garmentData.brand}
                 onChange={(e) => handleInputChange("brand", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 text-sm sm:text-base"
                 placeholder="e.g., J.Crew"
               />
             </div>
@@ -129,20 +129,20 @@ export const GarmentCapture = () => {
                 type="text"
                 value={garmentData.color}
                 onChange={(e) => handleInputChange("color", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 text-sm sm:text-base"
                 placeholder="e.g., Navy Blue"
                 required
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Type
               </label>
               <select
                 value={garmentData.type}
                 onChange={(e) => handleInputChange("type", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 bg-white"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 bg-white text-sm sm:text-base"
               >
                 <option value="Tops">Tops</option>
                 <option value="Bottoms">Bottoms</option>
@@ -162,7 +162,7 @@ export const GarmentCapture = () => {
               type="text"
               value={garmentData.tags}
               onChange={(e) => handleInputChange("tags", e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 text-sm sm:text-base"
               placeholder="e.g., formal, work, versatile"
             />
           </div>
@@ -170,7 +170,7 @@ export const GarmentCapture = () => {
           <button
             type="submit"
             disabled={!selectedImage || !garmentData.name || !garmentData.color}
-            className="w-full px-6 py-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             Save Garment to Closet
           </button>
@@ -178,9 +178,9 @@ export const GarmentCapture = () => {
       </div>
 
       {/* Quick Tips */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
-        <h3 className="font-semibold text-gray-800 mb-3">📸 Photo Tips</h3>
-        <ul className="space-y-2 text-sm text-gray-600">
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 sm:p-6 border border-blue-100">
+        <h3 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base">📸 Photo Tips</h3>
+        <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
           <li>• Use good lighting for clear photos</li>
           <li>• Lay garments flat or hang them neatly</li>
           <li>• Include the full garment in the frame</li>
