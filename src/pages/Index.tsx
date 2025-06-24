@@ -1,12 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
+import { GarmentCatalog } from "@/components/GarmentCatalog";
+import { ClosetLayout } from "@/components/ClosetLayout";
+import { OutfitRecommendations } from "@/components/OutfitRecommendations";
+import { GarmentCapture } from "@/components/GarmentCapture";
+
+type ActiveTab = "catalog" | "closet" | "outfits" | "capture";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<ActiveTab>("catalog");
+
+  const renderActiveComponent = () => {
+    switch (activeTab) {
+      case "catalog":
+        return <GarmentCatalog />;
+      case "closet":
+        return <ClosetLayout />;
+      case "outfits":
+        return <OutfitRecommendations />;
+      case "capture":
+        return <GarmentCapture />;
+      default:
+        return <GarmentCatalog />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+      <Header />
+      <main className="container mx-auto px-4 py-6 max-w-6xl">
+        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="mt-6">
+          {renderActiveComponent()}
+        </div>
+      </main>
     </div>
   );
 };
