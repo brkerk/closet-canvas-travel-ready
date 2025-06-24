@@ -1,93 +1,202 @@
 
+import { useState } from "react";
+import { Shuffle, Heart, Share, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface OutfitData {
+  id: string;
+  name: string;
+  occasion: string;
+  weather: string;
+  items: {
+    top?: string;
+    bottom?: string;
+    outerwear?: string;
+    shoes?: string;
+    accessories?: string[];
+  };
+  isFavorite: boolean;
+}
+
 export const OutfitRecommendations = () => {
-  const outfitSuggestions = [
+  const [selectedOccasion, setSelectedOccasion] = useState("Work");
+  const [selectedWeather, setSelectedWeather] = useState("Mild");
+  const [outfits, setOutfits] = useState<OutfitData[]>([
     {
-      id: 1,
-      name: "Business Casual",
-      weather: "72°F • Sunny",
-      items: ["Navy Blazer", "White Shirt", "Black Jeans"],
-      image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=500&fit=crop",
-      confidence: 95,
+      id: "1",
+      name: "Professional Ensemble",
+      occasion: "Work",
+      weather: "Mild",
+      items: {
+        top: "White Cotton Shirt",
+        bottom: "Black Trousers",
+        outerwear: "Navy Blue Blazer",
+        shoes: "Black Leather Shoes",
+        accessories: ["Watch", "Belt"],
+      },
+      isFavorite: true,
     },
     {
-      id: 2,
-      name: "Weekend Brunch",
-      weather: "72°F • Sunny",
-      items: ["White Cotton Shirt", "Black Jeans", "Red Scarf"],
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop",
-      confidence: 88,
+      id: "2",
+      name: "Casual Weekend",
+      occasion: "Casual",
+      weather: "Warm",
+      items: {
+        top: "Striped T-Shirt",
+        bottom: "Denim Jeans",
+        shoes: "White Sneakers",
+        accessories: ["Sunglasses"],
+      },
+      isFavorite: false,
     },
-    {
-      id: 3,
-      name: "Evening Out",
-      weather: "68°F • Clear",
-      items: ["Navy Blazer", "Black Jeans", "Red Scarf"],
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=500&fit=crop",
-      confidence: 92,
-    },
-  ];
+  ]);
+
+  const occasions = ["Work", "Casual", "Formal", "Date", "Travel", "Exercise"];
+  const weatherOptions = ["Cold", "Mild", "Warm", "Hot", "Rainy"];
+
+  const generateOutfit = () => {
+    // Simple outfit generation logic - in a real app this would be more sophisticated
+    const newOutfit: OutfitData = {
+      id: `outfit-${Date.now()}`,
+      name: `${selectedOccasion} Outfit`,
+      occasion: selectedOccasion,
+      weather: selectedWeather,
+      items: {
+        top: "Generated Top",
+        bottom: "Generated Bottom",
+        shoes: "Generated Shoes",
+      },
+      isFavorite: false,
+    };
+    setOutfits(prev => [newOutfit, ...prev]);
+  };
+
+  const toggleFavorite = (id: string) => {
+    setOutfits(prev => prev.map(outfit => 
+      outfit.id === id ? { ...outfit, isFavorite: !outfit.isFavorite } : outfit
+    ));
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Today's Recommendations</h2>
-        <p className="text-gray-600 mb-6">AI-powered outfit suggestions based on weather and your style</p>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {outfitSuggestions.map((outfit) => (
-            <div key={outfit.id} className="group">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-800">{outfit.name}</h3>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-sm text-green-600">{outfit.confidence}%</span>
-                  </div>
-                </div>
-                
-                <div className="aspect-[3/4] rounded-xl overflow-hidden mb-4">
-                  <img
-                    src={outfit.image}
-                    alt={outfit.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-500">{outfit.weather}</p>
-                  
-                  <div className="space-y-1">
-                    {outfit.items.map((item, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                        <span className="text-sm text-gray-700">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-pink-400 to-purple-500 text-white rounded-xl hover:shadow-md transition-all duration-200">
-                    Wear This Outfit
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Outfit Recommendations</h2>
+        <Button onClick={generateOutfit} className="w-full sm:w-auto" size="sm">
+          <Shuffle className="w-4 h-4 mr-2" />
+          Generate Outfit
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg border border-pink-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Occasion</label>
+            <select
+              value={selectedOccasion}
+              onChange={(e) => setSelectedOccasion(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 bg-white text-sm"
+            >
+              {occasions.map(occasion => (
+                <option key={occasion} value={occasion}>{occasion}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Weather</label>
+            <select
+              value={selectedWeather}
+              onChange={(e) => setSelectedWeather(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 bg-white text-sm"
+            >
+              {weatherOptions.map(weather => (
+                <option key={weather} value={weather}>{weather}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Style Preferences</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {["Casual", "Business", "Formal", "Trendy", "Vintage", "Minimalist", "Bohemian", "Sporty"].map((style) => (
-            <button
-              key={style}
-              className="px-4 py-2 border border-gray-200 rounded-xl text-sm hover:border-purple-300 hover:bg-purple-50 transition-colors"
-            >
-              {style}
-            </button>
-          ))}
-        </div>
+      {/* Outfits Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {outfits.map(outfit => (
+          <div key={outfit.id} className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-100">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{outfit.name}</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => toggleFavorite(outfit.id)}
+                  className={`p-2 rounded-full transition-colors ${
+                    outfit.isFavorite ? "text-red-500" : "text-gray-400 hover:text-red-500"
+                  }`}
+                >
+                  <Heart className="w-4 h-4" fill={outfit.isFavorite ? "currentColor" : "none"} />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              <div className="flex items-center gap-2 text-xs sm:text-sm">
+                <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg">{outfit.occasion}</span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg">{outfit.weather}</span>
+              </div>
+
+              <div className="space-y-2">
+                {outfit.items.top && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                    <span className="text-gray-600">Top: {outfit.items.top}</span>
+                  </div>
+                )}
+                {outfit.items.bottom && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                    <span className="text-gray-600">Bottom: {outfit.items.bottom}</span>
+                  </div>
+                )}
+                {outfit.items.outerwear && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+                    <span className="text-gray-600">Outerwear: {outfit.items.outerwear}</span>
+                  </div>
+                )}
+                {outfit.items.shoes && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="w-2 h-2 bg-red-400 rounded-full"></span>
+                    <span className="text-gray-600">Shoes: {outfit.items.shoes}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1">
+                <Calendar className="w-4 h-4 mr-2" />
+                Plan
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1">
+                <Share className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {/* Empty State */}
+      {outfits.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">✨</div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">No outfits yet</h3>
+          <p className="text-gray-600 mb-4">Generate your first outfit recommendation</p>
+          <Button onClick={generateOutfit}>
+            <Shuffle className="w-4 h-4 mr-2" />
+            Generate Outfit
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
