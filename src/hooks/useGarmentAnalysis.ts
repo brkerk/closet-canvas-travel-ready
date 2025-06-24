@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
-import { garmentAI, GarmentAnalysis } from '@/services/garmentAI';
+import { garmentAI } from '@/services/garmentAI';
+import type { GarmentAnalysis } from '@/types/garment';
 
 interface UseGarmentAnalysisReturn {
   analysis: GarmentAnalysis | null;
