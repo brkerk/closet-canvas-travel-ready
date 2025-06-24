@@ -62,9 +62,9 @@ class GarmentAIService {
       // Map AI results to garment types
       const garmentType = this.mapToGarmentType(classifications);
       
-      // Generate suggested name and tags
-      const suggestedName = this.generateSuggestedName(garmentType, dominantColor);
-      const suggestedTags = this.generateSuggestedTags(garmentType, classifications);
+      // Generate suggested name and tags - fix: pass garmentType.type (string) instead of garmentType (object)
+      const suggestedName = this.generateSuggestedName(garmentType.type, dominantColor);
+      const suggestedTags = this.generateSuggestedTags(garmentType.type, classifications);
 
       return {
         type: garmentType.type,
