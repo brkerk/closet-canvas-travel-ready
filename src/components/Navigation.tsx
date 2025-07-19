@@ -12,7 +12,6 @@ export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
     { id: "closet", label: "My Closet", icon: Shirt },
     { id: "builder", label: "Closet Designer", icon: Layout },
     { id: "outfits", label: "Outfit AI", icon: Sparkles },
-    { id: "tools", label: "AI Tools", icon: Scissors },
   ];
 
   return (

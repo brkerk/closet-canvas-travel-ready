@@ -6,7 +6,7 @@ import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { CanvasClosetBuilder } from "@/components/CanvasClosetBuilder";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
-import { BackgroundRemovalTool } from "@/components/BackgroundRemovalTool";
+
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("capture");
@@ -21,8 +21,6 @@ const Index = () => {
         return <CanvasClosetBuilder />;
       case "outfits":
         return <SmartOutfitRecommendations />;
-      case "tools":
-        return <BackgroundRemovalTool />;
       default:
         return <EnhancedGarmentCapture />;
     }
