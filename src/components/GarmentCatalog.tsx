@@ -1,13 +1,29 @@
 
 import { useState } from "react";
 import { GarmentCard, GarmentData } from "./GarmentCard";
-import { Search, Filter, Plus, Grid, List } from "lucide-react";
+import { Search, Filter, Plus, Grid, List, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GarmentBulkActions } from "./GarmentBulkActions";
+import { SmartFilters, SmartFilterOptions } from "./SmartFilters";
+import { QuickPreview } from "./QuickPreview";
+import { DragDropGarments } from "./DragDropGarments";
+import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
 
 export const GarmentCatalog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [quickPreviewGarment, setQuickPreviewGarment] = useState<GarmentData | null>(null);
+  const [showQuickPreview, setShowQuickPreview] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [smartFilters, setSmartFilters] = useState<SmartFilterOptions>({
+    colors: [],
+    lastWorn: null,
+    wearFrequency: null,
+    smartSuggestions: false
+  });
+
   const [garments, setGarments] = useState<GarmentData[]>([
     {
       id: "1",
@@ -36,6 +52,24 @@ export const GarmentCatalog = () => {
       tags: ["casual", "durable", "fall"],
       isFavorite: true,
     },
+    {
+      id: "4",
+      name: "Denim Jeans",
+      brand: "Levi's",
+      color: "Blue",
+      type: "Bottoms",
+      tags: ["casual", "everyday", "denim"],
+      isFavorite: false,
+    },
+    {
+      id: "5",
+      name: "Red Dress",
+      brand: "Zara",
+      color: "Red",
+      type: "Dresses",
+      tags: ["formal", "evening", "elegant"],
+      isFavorite: true,
+    },
   ]);
 
   const garmentTypes = ["All", "Tops", "Bottoms", "Outerwear", "Shoes", "Accessories", "Dresses"];
@@ -45,7 +79,36 @@ export const GarmentCatalog = () => {
                          garment.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          garment.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = selectedType === "All" || garment.type === selectedType;
-    return matchesSearch && matchesType;
+    
+    // Smart filters
+    const matchesColor = smartFilters.colors.length === 0 || 
+      smartFilters.colors.some(color => garment.color.toLowerCase().includes(color.toLowerCase()));
+    
+    // For demo purposes, we'll simulate other smart filters
+    const matchesWearFrequency = !smartFilters.wearFrequency || 
+      (Math.random() > 0.5); // Simulate frequency matching
+    
+    const matchesLastWorn = !smartFilters.lastWorn || 
+      (Math.random() > 0.3); // Simulate last worn matching
+
+    return matchesSearch && matchesType && matchesColor && matchesWearFrequency && matchesLastWorn;
+  });
+
+  // Keyboard navigation
+  const { isSelected } = useKeyboardNavigation({
+    items: filteredGarments,
+    selectedIndex,
+    onSelectionChange: setSelectedIndex,
+    onSelect: (garment) => {
+      setQuickPreviewGarment(garment);
+      setShowQuickPreview(true);
+    },
+    onBulkSelect: () => {
+      if (selectedIndex >= 0 && filteredGarments[selectedIndex]) {
+        toggleItemSelection(filteredGarments[selectedIndex].id);
+      }
+    },
+    isEnabled: true
   });
 
   const toggleFavorite = (id: string) => {
@@ -56,17 +119,62 @@ export const GarmentCatalog = () => {
 
   const deleteGarment = (id: string) => {
     setGarments(prev => prev.filter(garment => garment.id !== id));
+    setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+  };
+
+  const toggleItemSelection = (id: string) => {
+    setSelectedItems(prev => 
+      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = (ids: string[]) => {
+    setGarments(prev => prev.filter(garment => !ids.includes(garment.id)));
+    setSelectedItems([]);
+  };
+
+  const handleBulkTag = (ids: string[], tags: string[]) => {
+    setGarments(prev => prev.map(garment => 
+      ids.includes(garment.id) 
+        ? { ...garment, tags: [...new Set([...garment.tags, ...tags])] }
+        : garment
+    ));
+  };
+
+  const handleBulkFavorite = (ids: string[]) => {
+    setGarments(prev => prev.map(garment => 
+      ids.includes(garment.id) ? { ...garment, isFavorite: true } : garment
+    ));
+  };
+
+  const handleQuickPreview = (garment: GarmentData) => {
+    setQuickPreviewGarment(garment);
+    setShowQuickPreview(true);
+  };
+
+  const handleReorder = (reorderedGarments: GarmentData[]) => {
+    setGarments(reorderedGarments);
   };
 
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Garment Catalog</h2>
-        <Button className="w-full sm:w-auto" size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Garment
-        </Button>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Smart Garment Catalog</h2>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => setSelectedItems(selectedItems.length === filteredGarments.length ? [] : filteredGarments.map(g => g.id))}
+          >
+            <CheckSquare className="w-4 h-4 mr-2" />
+            {selectedItems.length === filteredGarments.length ? 'Deselect All' : 'Select All'}
+          </Button>
+          <Button className="w-full sm:w-auto" size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Garment
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -103,24 +211,31 @@ export const GarmentCatalog = () => {
               ))}
             </div>
 
-            {/* View Toggle */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === "grid" ? "bg-white shadow-sm" : "hover:bg-gray-200"
-                }`}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === "list" ? "bg-white shadow-sm" : "hover:bg-gray-200"
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+            <div className="flex items-center gap-2">
+              <SmartFilters 
+                currentFilters={smartFilters}
+                onFiltersChange={setSmartFilters}
+              />
+
+              {/* View Toggle */}
+              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === "grid" ? "bg-white shadow-sm" : "hover:bg-gray-200"
+                  }`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === "list" ? "bg-white shadow-sm" : "hover:bg-gray-200"
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -130,35 +245,64 @@ export const GarmentCatalog = () => {
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-600">
           {filteredGarments.length} garment{filteredGarments.length !== 1 ? 's' : ''} found
+          {selectedItems.length > 0 && ` • ${selectedItems.length} selected`}
         </span>
+        <div className="text-xs text-gray-500">
+          Use arrow keys to navigate, Space to select, Enter to preview
+        </div>
       </div>
 
-      {/* Garments Grid/List */}
-      <div className={`${
-        viewMode === "grid" 
-          ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4"
-          : "space-y-3"
-      }`}>
-        {filteredGarments.map(garment => (
-          <GarmentCard
-            key={garment.id}
-            garment={garment}
-            onToggleFavorite={toggleFavorite}
-            onDelete={deleteGarment}
-            size={viewMode === "grid" ? "medium" : "small"}
-          />
-        ))}
-      </div>
-
-      {/* Empty State */}
-      {filteredGarments.length === 0 && (
+      {/* Garments with Drag & Drop */}
+      {filteredGarments.length > 0 ? (
+        <DragDropGarments
+          garments={filteredGarments}
+          onReorder={handleReorder}
+          onToggleFavorite={toggleFavorite}
+          onDelete={deleteGarment}
+          onQuickPreview={handleQuickPreview}
+          viewMode={viewMode}
+        />
+      ) : (
+        // Empty State
         <div className="text-center py-12">
           <div className="text-6xl mb-4">👔</div>
           <h3 className="text-lg font-medium text-gray-800 mb-2">No garments found</h3>
           <p className="text-gray-600 mb-4">Try adjusting your search or filters</p>
-          <Button variant="outline">Clear Filters</Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedType("All");
+              setSmartFilters({
+                colors: [],
+                lastWorn: null,
+                wearFrequency: null,
+                smartSuggestions: false
+              });
+            }}
+          >
+            Clear Filters
+          </Button>
         </div>
       )}
+
+      {/* Bulk Actions */}
+      <GarmentBulkActions
+        selectedItems={selectedItems}
+        onBulkDelete={handleBulkDelete}
+        onBulkTag={handleBulkTag}
+        onBulkFavorite={handleBulkFavorite}
+        onClearSelection={() => setSelectedItems([])}
+      />
+
+      {/* Quick Preview */}
+      <QuickPreview
+        garment={quickPreviewGarment}
+        isOpen={showQuickPreview}
+        onClose={() => setShowQuickPreview(false)}
+        onToggleFavorite={toggleFavorite}
+        onDelete={deleteGarment}
+      />
     </div>
   );
 };

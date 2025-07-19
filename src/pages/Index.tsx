@@ -5,12 +5,12 @@ import { Navigation } from "@/components/Navigation";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { ClosetLayout } from "@/components/ClosetLayout";
 import { OutfitRecommendations } from "@/components/OutfitRecommendations";
-import { GarmentCapture } from "@/components/GarmentCapture";
+import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 
 type ActiveTab = "catalog" | "closet" | "outfits" | "capture";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("closet");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("catalog");
 
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -21,9 +21,9 @@ const Index = () => {
       case "outfits":
         return <OutfitRecommendations />;
       case "capture":
-        return <GarmentCapture />;
+        return <EnhancedGarmentCapture />;
       default:
-        return <ClosetLayout />;
+        return <GarmentCatalog />;
     }
   };
 
