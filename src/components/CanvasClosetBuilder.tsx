@@ -15,7 +15,173 @@ import {
 import { ClosetModuleData } from "./ClosetModule";
 
 export const CanvasClosetBuilder = () => {
-  const [modules, setModules] = useState<CanvasModule[]>([]);
+  // Create an example closet layout similar to the reference image
+  const createExampleLayout = (): CanvasModule[] => {
+    const exampleModules: CanvasModule[] = [
+      // Top row - Storage boxes/shelves
+      {
+        id: "example-shelf-1",
+        type: "shelves",
+        position: { x: 20, y: 20 },
+        size: { width: 120, height: 80 },
+        capacity: 8,
+        items: [
+          { id: "box1", name: "Storage Box", color: "#8B5CF6", type: "accessory" },
+          { id: "box2", name: "Winter Clothes", color: "#6366F1", type: "accessory" },
+        ],
+      },
+      {
+        id: "example-shelf-2",
+        type: "shelves",
+        position: { x: 160, y: 20 },
+        size: { width: 120, height: 80 },
+        capacity: 8,
+        items: [
+          { id: "box3", name: "Seasonal Items", color: "#8B5CF6", type: "accessory" },
+        ],
+      },
+      {
+        id: "example-shelf-3",
+        type: "shelves",
+        position: { x: 300, y: 20 },
+        size: { width: 120, height: 80 },
+        capacity: 8,
+        items: [
+          { id: "box4", name: "Bags & Purses", color: "#EC4899", type: "accessory" },
+        ],
+      },
+      
+      // Left side - Long hanging rod
+      {
+        id: "example-hanging-1",
+        type: "hanging-rod",
+        position: { x: 20, y: 120 },
+        size: { width: 140, height: 200 },
+        capacity: 12,
+        items: [
+          { id: "dress1", name: "Evening Dress", color: "#1F2937", type: "dress" },
+          { id: "coat1", name: "Winter Coat", color: "#374151", type: "jacket" },
+          { id: "dress2", name: "Summer Dress", color: "#F59E0B", type: "dress" },
+        ],
+      },
+      
+      // Center - Short hanging rod
+      {
+        id: "example-hanging-2",
+        type: "hanging-rod",
+        position: { x: 180, y: 120 },
+        size: { width: 140, height: 140 },
+        capacity: 12,
+        items: [
+          { id: "shirt1", name: "Business Shirt", color: "#3B82F6", type: "shirt" },
+          { id: "blouse1", name: "Silk Blouse", color: "#EC4899", type: "shirt" },
+          { id: "jacket1", name: "Blazer", color: "#1F2937", type: "jacket" },
+        ],
+      },
+      
+      // Right side - Folded clothes shelves
+      {
+        id: "example-shelf-4",
+        type: "shelves",
+        position: { x: 340, y: 120 },
+        size: { width: 120, height: 60 },
+        capacity: 8,
+        items: [
+          { id: "sweater1", name: "Wool Sweater", color: "#6B7280", type: "shirt" },
+          { id: "tshirt1", name: "Cotton T-Shirt", color: "#F9FAFB", type: "shirt" },
+        ],
+      },
+      {
+        id: "example-shelf-5",
+        type: "shelves",
+        position: { x: 340, y: 200 },
+        size: { width: 120, height: 60 },
+        capacity: 8,
+        items: [
+          { id: "sweater2", name: "Cardigan", color: "#EF4444", type: "shirt" },
+          { id: "tshirt2", name: "V-neck Tee", color: "#10B981", type: "shirt" },
+        ],
+      },
+      
+      // Center bottom - More shelves for folded clothes
+      {
+        id: "example-shelf-6",
+        type: "shelves",
+        position: { x: 180, y: 280 },
+        size: { width: 140, height: 60 },
+        capacity: 8,
+        items: [
+          { id: "jeans1", name: "Blue Jeans", color: "#1E40AF", type: "pants" },
+          { id: "pants1", name: "Chinos", color: "#92400E", type: "pants" },
+        ],
+      },
+      
+      // Bottom row - Drawers
+      {
+        id: "example-drawer-1",
+        type: "drawers",
+        position: { x: 20, y: 340 },
+        size: { width: 120, height: 80 },
+        capacity: 20,
+        items: [
+          { id: "underwear1", name: "Undergarments", color: "#F3F4F6", type: "accessory" },
+          { id: "socks1", name: "Socks", color: "#374151", type: "accessory" },
+        ],
+      },
+      {
+        id: "example-drawer-2",
+        type: "drawers",
+        position: { x: 160, y: 340 },
+        size: { width: 120, height: 80 },
+        capacity: 20,
+        items: [
+          { id: "belt1", name: "Leather Belt", color: "#92400E", type: "accessory" },
+          { id: "scarf1", name: "Silk Scarf", color: "#EC4899", type: "accessory" },
+        ],
+      },
+      {
+        id: "example-drawer-3",
+        type: "drawers",
+        position: { x: 300, y: 340 },
+        size: { width: 120, height: 80 },
+        capacity: 20,
+        items: [
+          { id: "ties1", name: "Neckties", color: "#1F2937", type: "accessory" },
+        ],
+      },
+      
+      // Right side - Shoe rack
+      {
+        id: "example-shoes-1",
+        type: "shoe-rack",
+        position: { x: 480, y: 120 },
+        size: { width: 100, height: 140 },
+        capacity: 6,
+        items: [
+          { id: "shoes1", name: "High Heels", color: "#1F2937", type: "shoes" },
+          { id: "shoes2", name: "Sneakers", color: "#EF4444", type: "shoes" },
+          { id: "shoes3", name: "Boots", color: "#92400E", type: "shoes" },
+        ],
+      },
+      
+      // Accessories hooks
+      {
+        id: "example-hooks-1",
+        type: "accessory-hooks",
+        position: { x: 480, y: 280 },
+        size: { width: 100, height: 80 },
+        capacity: 5,
+        items: [
+          { id: "bag1", name: "Handbag", color: "#92400E", type: "accessory" },
+          { id: "necklace1", name: "Jewelry", color: "#F59E0B", type: "accessory" },
+        ],
+      },
+    ];
+    
+    return exampleModules;
+  };
+
+  const [modules, setModules] = useState<CanvasModule[]>(createExampleLayout());
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(true);
 
@@ -107,6 +273,11 @@ export const CanvasClosetBuilder = () => {
     setSelectedModule(null);
   };
 
+  const resetToExample = () => {
+    setModules(createExampleLayout());
+    setSelectedModule(null);
+  };
+
   const saveCloset = () => {
     console.log("Saving canvas closet configuration:", { modules });
     // Here you would save to backend/localStorage
@@ -137,7 +308,7 @@ export const CanvasClosetBuilder = () => {
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Design Your Dream Closet</h2>
             <p className="text-sm text-gray-600">
-              Create the perfect storage solution with our new canvas-based designer. Drag, resize, and arrange modules freely.
+              Start with our example layout, then customize it to match your actual closet space and storage needs.
             </p>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
@@ -152,12 +323,20 @@ export const CanvasClosetBuilder = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={clearCloset}
+              onClick={resetToExample}
               className="flex-1 sm:flex-none"
               size="sm"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
-              Clear
+              Example
+            </Button>
+            <Button
+              variant="outline"
+              onClick={clearCloset}
+              className="flex-1 sm:flex-none"
+              size="sm"
+            >
+              Clear All
             </Button>
             <Button
               onClick={saveCloset}
@@ -191,20 +370,20 @@ export const CanvasClosetBuilder = () => {
 
       {/* Tips Panel */}
       {showTips && (
-        <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
-          <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
-            <HelpCircle className="w-4 h-4" />
-            Canvas Designer Tips
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
-            <div>• Drag modules anywhere on the canvas</div>
-            <div>• Resize modules by dragging the resize handle</div>
-            <div>• Modules snap to grid for perfect alignment</div>
-            <div>• Click empty space to deselect modules</div>
-            <div>• Use different module types for variety</div>
-            <div>• Plan your layout before adding modules</div>
+          <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+            <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              Getting Started
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
+              <div>• Start with the example layout provided</div>
+              <div>• Add or remove modules to match your closet</div>
+              <div>• Drag modules to reposition them</div>
+              <div>• Resize modules by dragging corners</div>
+              <div>• Use "Example" button to reset to sample layout</div>
+              <div>• Save your design when you're happy with it</div>
+            </div>
           </div>
-        </div>
       )}
 
       {/* Main Layout */}
