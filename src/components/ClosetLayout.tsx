@@ -1,10 +1,10 @@
 
-import { ClosetBuilder } from "./ClosetBuilder";
+import { CanvasClosetBuilder } from "./CanvasClosetBuilder";
 
 export const ClosetLayout = () => {
   return (
     <div className="space-y-6">
-      <ClosetBuilder />
+      <CanvasClosetBuilder />
     </div>
   );
 };
