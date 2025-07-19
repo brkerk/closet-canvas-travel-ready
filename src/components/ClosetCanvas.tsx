@@ -90,23 +90,22 @@ export const ClosetCanvas = ({
     if (!module) return;
 
     if (dragState.mode === 'move') {
-      // More flexible positioning - only snap if close to edges, otherwise allow free movement
       const rawPosition = {
         x: currentPos.x - dragState.offset.x,
         y: currentPos.y - dragState.offset.y
       };
       
-      const snappedPosition = snapToModulesAndGrid(rawPosition, module.size, modules.filter(m => m.id !== dragState.moduleId), 15);
-      
-      // Use snapped position if it's close, otherwise use raw position for free movement
-      const finalPosition = {
-        x: Math.abs(snappedPosition.x - rawPosition.x) < 15 ? snappedPosition.x : snapToGrid(rawPosition.x),
-        y: Math.abs(snappedPosition.y - rawPosition.y) < 15 ? snappedPosition.y : snapToGrid(rawPosition.y)
-      };
+      // Always try smart snapping first for better alignment
+      const snappedPosition = snapToModulesAndGrid(
+        rawPosition, 
+        module.size, 
+        modules.filter(m => m.id !== dragState.moduleId), 
+        25  // Increased snap distance for better alignment
+      );
 
       const otherModules = modules.filter(m => m.id !== dragState.moduleId);
-      if (isPositionValid(finalPosition, module.size, otherModules)) {
-        onModuleMove(dragState.moduleId, finalPosition);
+      if (isPositionValid(snappedPosition, module.size, otherModules)) {
+        onModuleMove(dragState.moduleId, snappedPosition);
       }
     } else if (dragState.mode === 'resize') {
       const newSize = {
