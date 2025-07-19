@@ -37,128 +37,159 @@ export const CanvasModule = ({
 
   const moduleInfo = getModuleInfo();
 
-  const getRealisticModuleStyle = () => {
-    const baseColor = moduleStyle.color;
-    
+  const getBlueprintModuleStyle = () => {
+    // Blueprint-style elevation rendering with architectural line work
     switch (module.type) {
       case "hanging-rod":
         return {
-          background: `linear-gradient(135deg, ${baseColor}dd 0%, ${baseColor}88 50%, ${baseColor}44 100%)`,
-          border: '2px solid rgba(255,255,255,0.3)',
-          boxShadow: `
-            inset 0 2px 4px rgba(255,255,255,0.3),
-            inset 0 -2px 4px rgba(0,0,0,0.2),
-            0 4px 8px rgba(0,0,0,0.3),
-            0 2px 4px rgba(0,0,0,0.1)
-          `,
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155',
           position: 'relative' as const,
           overflow: 'hidden' as const,
         };
       case "shelves":
         return {
-          background: `linear-gradient(180deg, ${baseColor}dd 0%, ${baseColor}99 50%, ${baseColor}66 100%)`,
-          border: '2px solid rgba(255,255,255,0.2)',
-          boxShadow: `
-            inset 0 1px 2px rgba(255,255,255,0.4),
-            inset 0 -1px 2px rgba(0,0,0,0.1),
-            0 6px 12px rgba(0,0,0,0.2),
-            0 2px 4px rgba(0,0,0,0.1)
-          `,
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155',
           position: 'relative' as const,
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(255,255,255,0.15) 15px, rgba(255,255,255,0.15) 17px)`,
         };
       case "drawers":
         return {
-          background: `linear-gradient(145deg, ${baseColor}ee 0%, ${baseColor}aa 50%, ${baseColor}77 100%)`,
-          border: '2px solid rgba(255,255,255,0.25)',
-          boxShadow: `
-            inset 0 2px 4px rgba(255,255,255,0.3),
-            inset 0 -2px 4px rgba(0,0,0,0.15),
-            0 8px 16px rgba(0,0,0,0.25),
-            0 4px 8px rgba(0,0,0,0.1)
-          `,
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155',
           position: 'relative' as const,
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.1) 20px, rgba(0,0,0,0.1) 22px)`,
         };
       case "shoe-rack":
         return {
-          background: `radial-gradient(ellipse at center, ${baseColor}dd 0%, ${baseColor}99 60%, ${baseColor}66 100%)`,
-          border: '2px solid rgba(255,255,255,0.2)',
-          boxShadow: `
-            inset 0 2px 4px rgba(255,255,255,0.2),
-            inset 0 -2px 4px rgba(0,0,0,0.2),
-            0 6px 12px rgba(0,0,0,0.3),
-            0 2px 4px rgba(0,0,0,0.15)
-          `,
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155',
           position: 'relative' as const,
-          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 3px, transparent 3px),
-                           radial-gradient(circle at 75% 75%, rgba(255,255,255,0.2) 3px, transparent 3px)`,
-          backgroundSize: '20px 20px',
         };
       case "accessory-hooks":
         return {
-          background: `conic-gradient(from 45deg, ${baseColor}dd, ${baseColor}99, ${baseColor}bb, ${baseColor}dd)`,
-          border: '2px solid rgba(255,255,255,0.3)',
-          boxShadow: `
-            inset 0 2px 4px rgba(255,255,255,0.4),
-            inset 0 -2px 4px rgba(0,0,0,0.1),
-            0 4px 8px rgba(0,0,0,0.2),
-            0 2px 4px rgba(0,0,0,0.1)
-          `,
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155',
           position: 'relative' as const,
-          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.15) 8px, rgba(255,255,255,0.15) 10px)`,
         };
       default:
-        return { backgroundColor: baseColor };
+        return { 
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          border: '2px solid #334155'
+        };
     }
   };
 
-  const getModuleDetails = () => {
+  const getBlueprintModuleDetails = () => {
+    // Architectural line drawings for blueprint style
     switch (module.type) {
       case "hanging-rod":
         return (
-          <div className="absolute inset-0 flex flex-col justify-between p-2">
-            <div className="h-1 bg-gray-400 rounded-full shadow-inner mx-2 mt-4" />
-            <div className="flex justify-center space-x-1 mb-4">
-              {[...Array(Math.min(3, Math.floor(module.size.width / 30)))].map((_, i) => (
-                <div key={i} className="w-1 h-8 bg-gray-300 rounded-sm shadow-sm" />
-              ))}
-            </div>
-          </div>
+          <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+            {/* Hanging rod */}
+            <line 
+              x1="8" y1="15" x2={module.size.width - 8} y2="15"
+              stroke="#334155" strokeWidth="3" strokeLinecap="round"
+            />
+            {/* Support brackets */}
+            <rect x="6" y="12" width="4" height="6" fill="none" stroke="#334155" strokeWidth="1"/>
+            <rect x={module.size.width - 10} y="12" width="4" height="6" fill="none" stroke="#334155" strokeWidth="1"/>
+            {/* Hanging clothes representation */}
+            {module.items.slice(0, Math.floor(module.size.width / 25)).map((_, i) => (
+              <line 
+                key={i}
+                x1={15 + i * 25} y1="15" 
+                x2={15 + i * 25} y2={module.size.height - 20}
+                stroke="#64748b" strokeWidth="2" strokeDasharray="2,2"
+              />
+            ))}
+          </svg>
         );
       case "shelves":
         return (
-          <div className="absolute inset-0 flex flex-col justify-evenly px-2">
-            {[...Array(Math.min(4, Math.floor(module.size.height / 30)))].map((_, i) => (
-              <div key={i} className="h-0.5 bg-black/20 rounded-sm mx-1" />
-            ))}
-          </div>
+          <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+            {/* Shelf lines */}
+            {[...Array(Math.min(4, Math.floor(module.size.height / 40)))].map((_, i) => {
+              const y = 20 + i * (module.size.height - 40) / Math.max(1, Math.min(3, Math.floor(module.size.height / 40) - 1));
+              return (
+                <g key={i}>
+                  <line 
+                    x1="4" y1={y} x2={module.size.width - 4} y2={y}
+                    stroke="#334155" strokeWidth="2"
+                  />
+                  {/* Support lines */}
+                  <line x1="4" y1={y} x2="4" y2={y + 3} stroke="#334155" strokeWidth="1"/>
+                  <line x1={module.size.width - 4} y1={y} x2={module.size.width - 4} y2={y + 3} stroke="#334155" strokeWidth="1"/>
+                </g>
+              );
+            })}
+          </svg>
         );
       case "drawers":
         return (
-          <div className="absolute inset-0 flex flex-col justify-evenly p-2">
-            {[...Array(Math.min(3, Math.floor(module.size.height / 35)))].map((_, i) => (
-              <div key={i} className="relative h-6 bg-black/10 rounded-sm mx-2 flex items-center justify-end pr-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full shadow-sm" />
-              </div>
-            ))}
-          </div>
+          <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+            {/* Drawer fronts */}
+            {[...Array(Math.min(3, Math.floor(module.size.height / 50)))].map((_, i) => {
+              const height = (module.size.height - 16) / Math.min(3, Math.floor(module.size.height / 50));
+              const y = 8 + i * height;
+              return (
+                <g key={i}>
+                  <rect 
+                    x="6" y={y} 
+                    width={module.size.width - 12} height={height - 4}
+                    fill="none" stroke="#334155" strokeWidth="1.5"
+                  />
+                  {/* Drawer handle */}
+                  <circle 
+                    cx={module.size.width - 15} cy={y + height/2 - 2}
+                    r="2" fill="#334155"
+                  />
+                </g>
+              );
+            })}
+          </svg>
         );
       case "shoe-rack":
         return (
-          <div className="absolute inset-0 grid grid-cols-2 gap-1 p-2">
-            {[...Array(Math.min(6, Math.floor((module.size.width * module.size.height) / 1000)))].map((_, i) => (
-              <div key={i} className="aspect-[2/1] bg-black/10 rounded-sm shadow-sm" />
-            ))}
-          </div>
+          <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+            {/* Shoe rack compartments */}
+            {[...Array(Math.min(6, Math.floor((module.size.width * module.size.height) / 2000)))].map((_, i) => {
+              const cols = Math.min(2, Math.ceil(module.size.width / 60));
+              const rows = Math.ceil(Math.min(6, Math.floor((module.size.width * module.size.height) / 2000)) / cols);
+              const x = 8 + (i % cols) * ((module.size.width - 16) / cols);
+              const y = 8 + Math.floor(i / cols) * ((module.size.height - 16) / rows);
+              const width = ((module.size.width - 16) / cols) - 4;
+              const height = ((module.size.height - 16) / rows) - 4;
+              
+              return (
+                <rect 
+                  key={i}
+                  x={x} y={y} 
+                  width={width} height={height}
+                  fill="none" stroke="#334155" strokeWidth="1"
+                />
+              );
+            })}
+          </svg>
         );
       case "accessory-hooks":
         return (
-          <div className="absolute inset-0 flex justify-evenly items-center p-2">
-            {[...Array(Math.min(5, Math.floor(module.size.width / 20)))].map((_, i) => (
-              <div key={i} className="w-1 h-4 bg-gray-400 rounded-full shadow-sm" />
-            ))}
-          </div>
+          <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+            {/* Hook mounting rail */}
+            <line 
+              x1="8" y1="20" x2={module.size.width - 8} y2="20"
+              stroke="#334155" strokeWidth="2"
+            />
+            {/* Individual hooks */}
+            {[...Array(Math.min(5, Math.floor(module.size.width / 25)))].map((_, i) => {
+              const x = 15 + i * ((module.size.width - 30) / Math.max(1, Math.min(4, Math.floor(module.size.width / 25) - 1)));
+              return (
+                <g key={i}>
+                  <line x1={x} y1="20" x2={x} y2="30" stroke="#334155" strokeWidth="2"/>
+                  <path d={`M ${x} 30 Q ${x + 3} 33 ${x + 6} 30`} fill="none" stroke="#334155" strokeWidth="2"/>
+                </g>
+              );
+            })}
+          </svg>
         );
       default:
         return null;
@@ -193,28 +224,28 @@ export const CanvasModule = ({
 
   return (
     <div
-      className={`absolute cursor-pointer select-none rounded-lg shadow-lg border-2 transition-all duration-200 ${
+      className={`absolute cursor-pointer select-none transition-all duration-200 ${
         isSelected 
-          ? "border-white shadow-2xl ring-4 ring-white/30 z-20" 
-          : "border-transparent hover:border-white/50 hover:shadow-xl"
+          ? "border-blue-500 shadow-2xl ring-2 ring-blue-300 z-20" 
+          : "border-gray-400 hover:border-blue-400 hover:shadow-lg"
       }`}
       style={{
         left: module.position.x,
         top: module.position.y,
         width: module.size.width,
         height: module.size.height,
-        ...getRealisticModuleStyle(),
+        ...getBlueprintModuleStyle(),
       }}
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
       }}
     >
-      {/* Realistic Module Details */}
-      {getModuleDetails()}
+      {/* Blueprint Module Details */}
+      {getBlueprintModuleDetails()}
       
       {/* Content */}
-      <div className="flex flex-col items-center justify-center h-full p-2 relative text-white z-10">
+      <div className="flex flex-col items-center justify-center h-full p-2 relative text-gray-800 z-10">
         {/* Controls */}
         <div className={`absolute top-1 right-1 flex gap-1 transition-opacity duration-200 ${
           isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -266,10 +297,10 @@ export const CanvasModule = ({
           </span>
           
           {/* Capacity bar */}
-          <div className="w-full max-w-16 bg-white/20 rounded-full h-2 overflow-hidden">
+          <div className="w-full max-w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
             <div 
               className={`h-full transition-all duration-300 ${
-                isNearFull ? "bg-orange-300" : "bg-white"
+                isNearFull ? "bg-orange-500" : "bg-blue-500"
               }`}
               style={{ width: `${fillPercentage}%` }}
             />

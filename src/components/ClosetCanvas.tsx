@@ -111,33 +111,81 @@ export const ClosetCanvas = ({
     setDragState(null);
   }, []);
 
-  // Grid background pattern
-  const gridPattern = `url("data:image/svg+xml,%3Csvg width='${CANVAS_CONFIG.gridSize}' height='${CANVAS_CONFIG.gridSize}' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='grid' width='${CANVAS_CONFIG.gridSize}' height='${CANVAS_CONFIG.gridSize}' patternUnits='userSpaceOnUse'%3E%3Cpath d='M ${CANVAS_CONFIG.gridSize} 0 L 0 0 0 ${CANVAS_CONFIG.gridSize}' fill='none' stroke='%23E5E7EB' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)'/%3E%3C/svg%3E")`;
+  // Blueprint-style background with architectural grid
+  const blueprintBackground = `
+    linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)
+  `;
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg border border-pink-100">
+    <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Closet Design Canvas</h3>
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Closet Elevation View</h3>
         <p className="text-sm text-gray-600">
-          Drag modules from the library and arrange them in your closet space
+          Blueprint-style 2D closet design - snap modules together to build your layout
         </p>
       </div>
       
       <div
         ref={canvasRef}
-        className="relative border-2 border-gray-200 rounded-lg overflow-hidden cursor-crosshair w-full max-w-full"
+        className="relative border-2 border-gray-300 rounded-lg overflow-hidden w-full max-w-full"
         style={{
           width: '100%',
           maxWidth: CANVAS_CONFIG.width,
           height: Math.min(CANVAS_CONFIG.height, window.innerHeight * 0.6),
-          backgroundImage: gridPattern,
-          backgroundColor: '#FAFAFA'
+          background: blueprintBackground,
+          backgroundSize: '20px 20px, 20px 20px, 100% 100%',
+          backgroundPosition: '0 0, 0 0, 0 0'
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
+        {/* Floor and Wall Lines */}
+        <svg 
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ zIndex: 1 }}
+        >
+          {/* Floor line */}
+          <line 
+            x1="0" 
+            y1={CANVAS_CONFIG.height - 20} 
+            x2={CANVAS_CONFIG.width} 
+            y2={CANVAS_CONFIG.height - 20}
+            stroke="rgba(255,255,255,0.4)" 
+            strokeWidth="2"
+          />
+          {/* Left wall */}
+          <line 
+            x1="20" 
+            y1="0" 
+            x2="20" 
+            y2={CANVAS_CONFIG.height - 20}
+            stroke="rgba(255,255,255,0.4)" 
+            strokeWidth="2"
+          />
+          {/* Right wall */}
+          <line 
+            x1={CANVAS_CONFIG.width - 20} 
+            y1="0" 
+            x2={CANVAS_CONFIG.width - 20} 
+            y2={CANVAS_CONFIG.height - 20}
+            stroke="rgba(255,255,255,0.4)" 
+            strokeWidth="2"
+          />
+          {/* Ceiling line */}
+          <line 
+            x1="20" 
+            y1="20" 
+            x2={CANVAS_CONFIG.width - 20} 
+            y2="20"
+            stroke="rgba(255,255,255,0.3)" 
+            strokeWidth="1"
+          />
+        </svg>
+
         {/* Canvas modules */}
         {modules.map((module) => (
           <CanvasModuleComponent
@@ -153,11 +201,11 @@ export const ClosetCanvas = ({
 
         {/* Empty state */}
         {modules.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center text-gray-400">
-              <div className="text-4xl mb-4">🏠</div>
-              <p className="text-lg font-medium mb-2">Your closet is empty</p>
-              <p className="text-sm">Add modules from the library to get started</p>
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="text-center text-white/70">
+              <div className="text-4xl mb-4">📐</div>
+              <p className="text-lg font-medium mb-2">Start Your Closet Design</p>
+              <p className="text-sm">Add modules to create your 2D closet elevation</p>
             </div>
           </div>
         )}
