@@ -67,91 +67,18 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Flexible snapping that prioritizes edge-to-edge placement
+// Free positioning - minimal constraints for maximum flexibility
 export const snapToModulesAndGrid = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
   snapDistance: number = 15
 ): CanvasPosition => {
-  let { x, y } = position;
-  let snapped = false;
-  
-  // Reduced snap distance for more precise control
-  const edgeSnapDistance = 10;
-  const alignmentSnapDistance = 8;
-  
-  // Try to snap to nearby module edges first (most important for placing next to each other)
-  for (const module of modules) {
-    const moduleLeft = module.position.x;
-    const moduleRight = module.position.x + module.size.width;
-    const moduleTop = module.position.y;
-    const moduleBottom = module.position.y + module.size.height;
-    
-    // Edge-to-edge snapping (place modules next to each other)
-    // Snap to right edge of existing module
-    if (Math.abs(x - moduleRight) < edgeSnapDistance) {
-      x = moduleRight;
-      snapped = true;
-      // Optional Y alignment when placing next to each other
-      if (Math.abs(y - moduleTop) < alignmentSnapDistance) {
-        y = moduleTop;
-      }
-    }
-    
-    // Snap to left edge of existing module
-    if (Math.abs(x + size.width - moduleLeft) < edgeSnapDistance) {
-      x = moduleLeft - size.width;
-      snapped = true;
-      // Optional Y alignment when placing next to each other
-      if (Math.abs(y - moduleTop) < alignmentSnapDistance) {
-        y = moduleTop;
-      }
-    }
-    
-    // Snap below existing module
-    if (Math.abs(y - moduleBottom) < edgeSnapDistance) {
-      y = moduleBottom;
-      snapped = true;
-      // Optional X alignment when stacking
-      if (Math.abs(x - moduleLeft) < alignmentSnapDistance) {
-        x = moduleLeft;
-      }
-    }
-    
-    // Snap above existing module  
-    if (Math.abs(y + size.height - moduleTop) < edgeSnapDistance) {
-      y = moduleTop - size.height;
-      snapped = true;
-      // Optional X alignment when stacking
-      if (Math.abs(x - moduleLeft) < alignmentSnapDistance) {
-        x = moduleLeft;
-      }
-    }
-  }
-  
-  // Only do gentle row/column alignment if no edge snapping occurred
-  if (!snapped) {
-    for (const module of modules) {
-      const moduleLeft = module.position.x;
-      const moduleTop = module.position.y;
-      
-      // Gentle row alignment (same Y position)
-      if (Math.abs(y - moduleTop) < alignmentSnapDistance) {
-        y = moduleTop;
-      }
-      
-      // Gentle column alignment (same X position)  
-      if (Math.abs(x - moduleLeft) < alignmentSnapDistance) {
-        x = moduleLeft;
-      }
-    }
-  }
-  
-  // Always snap to grid for clean positioning
+  // Return position as-is for completely free movement
+  // Only ensure it stays within canvas boundaries
   return {
-    x: snapToGrid(x),
-    y: snapToGrid(y)
+    x: Math.max(0, Math.min(position.x, CANVAS_CONFIG.width - size.width)),
+    y: Math.max(0, Math.min(position.y, CANVAS_CONFIG.height - size.height))
   };
 };
 
