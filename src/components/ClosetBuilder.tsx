@@ -4,12 +4,13 @@ import { ModuleLibrary } from "./ModuleLibrary";
 import { ClosetGrid } from "./ClosetGrid";
 import { ClosetModule, ClosetModuleData } from "./ClosetModule";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, Settings, HelpCircle } from "lucide-react";
 
 export const ClosetBuilder = () => {
   const [gridSize, setGridSize] = useState({ width: 6, height: 8 });
   const [modules, setModules] = useState<ClosetModuleData[]>([]);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [showTips, setShowTips] = useState(true);
 
   const addModule = (moduleType: ClosetModuleData["type"]) => {
     const newModule: ClosetModuleData = {
@@ -21,10 +22,13 @@ export const ClosetBuilder = () => {
       items: [],
     };
 
-    // Find the best position for the new module
     const position = findBestPosition(newModule);
     if (position) {
       setModules(prev => [...prev, { ...newModule, position }]);
+      setSelectedModule(newModule.id);
+    } else {
+      // Show user feedback that no space is available
+      alert("No space available for this module. Try clearing some space or removing other modules first.");
     }
   };
 
@@ -51,6 +55,7 @@ export const ClosetBuilder = () => {
   };
 
   const findBestPosition = (module: ClosetModuleData) => {
+    // Try to place near existing modules first
     for (let y = 0; y <= gridSize.height - module.size.height; y++) {
       for (let x = 0; x <= gridSize.width - module.size.width; x++) {
         if (isPositionAvailable(x, y, module.size)) {
@@ -88,6 +93,9 @@ export const ClosetBuilder = () => {
 
   const removeModule = (moduleId: string) => {
     setModules(prev => prev.filter(module => module.id !== moduleId));
+    if (selectedModule === moduleId) {
+      setSelectedModule(null);
+    }
   };
 
   const clearCloset = () => {
@@ -98,43 +106,111 @@ export const ClosetBuilder = () => {
   const saveCloset = () => {
     console.log("Saving closet configuration:", { gridSize, modules });
     // Here you would save to backend/localStorage
-    alert("Closet saved successfully!");
+    alert("Closet design saved successfully! 🎉");
   };
+
+  const getLayoutScore = () => {
+    if (modules.length === 0) return 0;
+    
+    const spaceUsed = modules.reduce((sum, module) => sum + (module.size.width * module.size.height), 0);
+    const totalSpace = gridSize.width * gridSize.height;
+    const efficiency = (spaceUsed / totalSpace) * 100;
+    
+    // Bonus points for having different types of storage
+    const uniqueTypes = new Set(modules.map(m => m.type)).size;
+    const varietyBonus = uniqueTypes * 5;
+    
+    return Math.min(100, Math.round(efficiency + varietyBonus));
+  };
+
+  const layoutScore = getLayoutScore();
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center justify-between">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Build Your Closet</h2>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            onClick={clearCloset}
-            className="flex-1 sm:flex-none"
-            size="sm"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Clear
-          </Button>
-          <Button
-            onClick={saveCloset}
-            className="flex-1 sm:flex-none"
-            size="sm"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 sm:p-6 border border-pink-100">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Design Your Dream Closet</h2>
+            <p className="text-sm text-gray-600">
+              Create the perfect storage solution for your wardrobe. Mix and match modules to fit your needs.
+            </p>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={() => setShowTips(!showTips)}
+              className="flex-1 sm:flex-none"
+              size="sm"
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Tips
+            </Button>
+            <Button
+              variant="outline"
+              onClick={clearCloset}
+              className="flex-1 sm:flex-none"
+              size="sm"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Clear
+            </Button>
+            <Button
+              onClick={saveCloset}
+              className="flex-1 sm:flex-none"
+              size="sm"
+              disabled={modules.length === 0}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save Design
+            </Button>
+          </div>
         </div>
+        
+        {/* Layout Score */}
+        {modules.length > 0 && (
+          <div className="mt-4 flex items-center gap-3">
+            <span className="text-sm font-medium text-gray-700">Layout Score:</span>
+            <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-32">
+              <div 
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  layoutScore >= 70 ? 'bg-green-500' : 
+                  layoutScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                }`}
+                style={{ width: `${layoutScore}%` }}
+              />
+            </div>
+            <span className="text-sm font-bold text-gray-800">{layoutScore}/100</span>
+          </div>
+        )}
       </div>
 
-      {/* Mobile-First Layout */}
+      {/* Tips Panel */}
+      {showTips && (
+        <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+          <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4" />
+            Pro Tips for Closet Design
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
+            <div>• Start with hanging rods for daily wear</div>
+            <div>• Use drawers for delicate items</div>
+            <div>• Place shoe racks at floor level</div>
+            <div>• Add hooks for easy access items</div>
+            <div>• Leave some empty space for flexibility</div>
+            <div>• Group similar storage types together</div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Module Library - Full width on mobile */}
+        {/* Module Library */}
         <div className="lg:col-span-1 order-2 lg:order-1">
           <ModuleLibrary onAddModule={addModule} />
         </div>
 
-        {/* Closet Grid - Full width on mobile */}
+        {/* Closet Grid */}
         <div className="lg:col-span-2 order-1 lg:order-2">
           <ClosetGrid
             gridSize={gridSize}
@@ -147,33 +223,57 @@ export const ClosetBuilder = () => {
         </div>
       </div>
 
-      {/* Mobile Statistics */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-pink-100">
-        <h3 className="font-semibold text-gray-800 mb-3 text-sm sm:text-base">Closet Summary</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div>
+      {/* Enhanced Statistics */}
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-100">
+        <h3 className="font-bold text-gray-800 mb-4 text-base">Closet Analytics</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">{modules.length}</div>
-            <div className="text-xs sm:text-sm text-gray-600">Modules</div>
+            <div className="text-xs sm:text-sm text-gray-600">Storage Modules</div>
           </div>
-          <div>
+          <div className="text-center">
             <div className="text-2xl font-bold text-pink-600">
               {modules.reduce((sum, module) => sum + module.capacity, 0)}
             </div>
-            <div className="text-xs sm:text-sm text-gray-600">Capacity</div>
+            <div className="text-xs sm:text-sm text-gray-600">Total Capacity</div>
           </div>
-          <div>
+          <div className="text-center">
             <div className="text-2xl font-bold text-indigo-600">
-              {Math.round((modules.length / (gridSize.width * gridSize.height)) * 100)}%
+              {Math.round((modules.reduce((sum, module) => sum + (module.size.width * module.size.height), 0) / (gridSize.width * gridSize.height)) * 100)}%
             </div>
-            <div className="text-xs sm:text-sm text-gray-600">Space Used</div>
+            <div className="text-xs sm:text-sm text-gray-600">Space Efficiency</div>
           </div>
-          <div>
+          <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {gridSize.width * gridSize.height - modules.reduce((sum, module) => sum + (module.size.width * module.size.height), 0)}
+              {new Set(modules.map(m => m.type)).size}
             </div>
-            <div className="text-xs sm:text-sm text-gray-600">Free Slots</div>
+            <div className="text-xs sm:text-sm text-gray-600">Storage Types</div>
           </div>
         </div>
+        
+        {/* Storage breakdown */}
+        {modules.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <h4 className="font-semibold text-gray-700 mb-2 text-sm">Storage Breakdown:</h4>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(new Set(modules.map(m => m.type))).map(type => {
+                const count = modules.filter(m => m.type === type).length;
+                const typeNames = {
+                  "hanging-rod": "Hanging Rods",
+                  "shelves": "Shelves",
+                  "drawers": "Drawers",
+                  "shoe-rack": "Shoe Racks",
+                  "accessory-hooks": "Hooks"
+                };
+                return (
+                  <span key={type} className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-700">
+                    {count}x {typeNames[type]}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
