@@ -7,6 +7,7 @@ import {
   CanvasSize, 
   CANVAS_CONFIG, 
   snapToGrid, 
+  snapToModulesAndGrid,
   isPositionValid 
 } from "@/utils/canvasUtils";
 
@@ -89,10 +90,11 @@ export const ClosetCanvas = ({
     if (!module) return;
 
     if (dragState.mode === 'move') {
-      const newPosition = {
-        x: snapToGrid(currentPos.x - dragState.offset.x),
-        y: snapToGrid(currentPos.y - dragState.offset.y)
-      };
+      const newPosition = snapToModulesAndGrid(
+        { x: currentPos.x - dragState.offset.x, y: currentPos.y - dragState.offset.y },
+        module.size,
+        modules.filter(m => m.id !== dragState.moduleId)
+      );
 
       const otherModules = modules.filter(m => m.id !== dragState.moduleId);
       if (isPositionValid(newPosition, module.size, otherModules)) {

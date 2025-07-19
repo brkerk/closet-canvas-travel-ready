@@ -67,6 +67,47 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
+// Enhanced snapping that aligns modules edge-to-edge
+export const snapToModulesAndGrid = (
+  position: CanvasPosition,
+  size: CanvasSize,
+  modules: CanvasModule[],
+  snapDistance: number = 10
+): CanvasPosition => {
+  let { x, y } = position;
+  
+  // First try to snap to nearby module edges
+  for (const module of modules) {
+    const moduleLeft = module.position.x;
+    const moduleRight = module.position.x + module.size.width;
+    const moduleTop = module.position.y;
+    const moduleBottom = module.position.y + module.size.height;
+    
+    // Snap to left edge (right side of existing module)
+    if (Math.abs(x - moduleRight) < snapDistance) {
+      x = moduleRight;
+    }
+    // Snap to right edge (left side of existing module)  
+    if (Math.abs(x + size.width - moduleLeft) < snapDistance) {
+      x = moduleLeft - size.width;
+    }
+    // Snap to top edge (bottom of existing module)
+    if (Math.abs(y - moduleBottom) < snapDistance) {
+      y = moduleBottom;
+    }
+    // Snap to bottom edge (top of existing module)
+    if (Math.abs(y + size.height - moduleTop) < snapDistance) {
+      y = moduleTop - size.height;
+    }
+  }
+  
+  // Fallback to grid snapping
+  return {
+    x: snapToGrid(x),
+    y: snapToGrid(y)
+  };
+};
+
 export const isPositionValid = (
   position: CanvasPosition,
   size: CanvasSize,
