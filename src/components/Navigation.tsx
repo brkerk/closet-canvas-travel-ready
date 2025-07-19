@@ -1,48 +1,39 @@
 
-import { Camera, Home, Image, List } from "lucide-react";
-
-type ActiveTab = "closet" | "catalog" | "outfits" | "capture";
+import { Camera, Layout, Shirt, Sparkles, Scissors } from "lucide-react";
 
 interface NavigationProps {
-  activeTab: ActiveTab;
-  onTabChange: (tab: ActiveTab) => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }
 
 export const Navigation = ({ activeTab, onTabChange }: NavigationProps) => {
-  const tabs = [
-    { id: "closet" as const, label: "My Closet", icon: Home, description: "Design your space" },
-    { id: "catalog" as const, label: "Catalog", icon: List, description: "Browse items" },
-    { id: "outfits" as const, label: "Outfits", icon: Image, description: "Style ideas" },
-    { id: "capture" as const, label: "Add Item", icon: Camera, description: "Scan & add" },
+  const navItems = [
+    { id: "capture", label: "Smart Capture", icon: Camera },
+    { id: "closet", label: "My Closet", icon: Shirt },
+    { id: "builder", label: "Closet Designer", icon: Layout },
+    { id: "outfits", label: "Outfit AI", icon: Sparkles },
+    { id: "tools", label: "AI Tools", icon: Scissors },
   ];
 
   return (
-    <nav className="bg-white rounded-2xl p-1.5 sm:p-2 shadow-lg border border-pink-100 sticky top-20 z-40">
-      <div className="flex gap-1 sm:gap-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          
-          return (
+    <nav className="bg-white shadow-lg border-b border-pink-100 sticky top-0 z-40">
+      <div className="container mx-auto px-4">
+        <div className="flex space-x-1 overflow-x-auto scrollbar-hide py-2">
+          {navItems.map(({ id, label, icon: Icon }) => (
             <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 rounded-xl transition-all duration-200 min-h-[3rem] group ${
-                isActive
-                  ? "bg-gradient-to-r from-pink-400 to-purple-500 text-white shadow-md"
-                  : "text-gray-600 hover:bg-pink-50 hover:text-pink-600"
+              key={id}
+              onClick={() => onTabChange(id)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${
+                activeTab === id
+                  ? "bg-gradient-to-r from-pink-400 to-purple-500 text-white shadow-lg"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
               }`}
             >
-              <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-              <div className="flex flex-col items-center sm:items-start">
-                <span className="font-medium text-xs sm:text-sm leading-tight">{tab.label}</span>
-                <span className={`text-xs opacity-75 hidden lg:block ${isActive ? "text-white" : "text-gray-500"}`}>
-                  {tab.description}
-                </span>
-              </div>
+              <Icon className="w-4 h-4" />
+              <span className="hidden sm:inline">{label}</span>
             </button>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </nav>
   );

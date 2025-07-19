@@ -2,53 +2,70 @@
 import type { Classification, GarmentTypeResult } from '@/types/garment';
 
 export class GarmentMapperService {
-  mapToGarmentType(classifications: Classification[]): GarmentTypeResult {
-    // Map common clothing-related classifications to our garment types
-    const garmentMappings: Record<string, string> = {
-      'jersey': 'Tops',
-      'cardigan': 'Tops',
-      'sweater': 'Tops',
-      'sweatshirt': 'Tops',
-      'polo shirt': 'Tops',
-      'tank top': 'Tops',
-      'tee shirt': 'Tops',
-      'suit': 'Outerwear',
-      'trench coat': 'Outerwear',
-      'lab coat': 'Outerwear',
-      'jean': 'Bottoms',
-      'miniskirt': 'Bottoms',
-      'sarong': 'Bottoms',
-      'overskirt': 'Bottoms',
-      'shoe': 'Shoes',
-      'sandal': 'Shoes',
-      'boot': 'Shoes',
-      'loafer': 'Shoes',
-      'running shoe': 'Shoes',
-      'sneaker': 'Shoes',
-      'dress': 'Dresses',
-      'gown': 'Dresses',
-      'wedding dress': 'Dresses',
-      'abaya': 'Dresses'
-    };
+  private garmentMappings = {
+    // ImageNet classes to garment types
+    'jersey': 'Tops',
+    'sweatshirt': 'Tops',
+    'cardigan': 'Tops',
+    'suit': 'Outerwear',
+    'jean': 'Bottoms',
+    'miniskirt': 'Bottoms',
+    'shoe': 'Shoes',
+    'sandal': 'Shoes',
+    'boot': 'Shoes',
+    'sneaker': 'Shoes',
+    'dress': 'Dresses',
+    'coat': 'Outerwear',
+    'jacket': 'Outerwear',
+    'shirt': 'Tops',
+    'pants': 'Bottoms',
+    'skirt': 'Bottoms',
+    'shorts': 'Bottoms',
+    'hat': 'Accessories',
+    'bag': 'Accessories',
+    'purse': 'Accessories',
+    'belt': 'Accessories',
+    'tie': 'Accessories',
+    'scarf': 'Accessories',
+  };
 
-    // Find the best match
+  mapToGarmentType(classifications: Classification[]): GarmentTypeResult {
+    if (!classifications || classifications.length === 0) {
+      return { type: 'Tops', confidence: 0 };
+    }
+
+    // Find the best matching garment type
+    let bestMatch: GarmentTypeResult = { type: 'Tops', confidence: 0 };
+
     for (const classification of classifications) {
       const label = classification.label.toLowerCase();
-      for (const [keyword, garmentType] of Object.entries(garmentMappings)) {
+      
+      // Check for direct matches
+      for (const [keyword, garmentType] of Object.entries(this.garmentMappings)) {
         if (label.includes(keyword)) {
-          return {
-            type: garmentType,
-            confidence: classification.score
-          };
+          if (classification.score > bestMatch.confidence) {
+            bestMatch = {
+              type: garmentType,
+              confidence: classification.score
+            };
+          }
         }
       }
     }
 
-    // Default fallback
-    return {
-      type: 'Tops',
-      confidence: 0.3
-    };
+    // Fallback: use heuristics based on common clothing terms
+    if (bestMatch.confidence === 0) {
+      const topMatch = classifications[0];
+      if (topMatch) {
+        const label = topMatch.label.toLowerCase();
+        
+        if (label.includes('clothing') || label.includes('wear') || label.includes('textile')) {
+          bestMatch = { type: 'Tops', confidence: topMatch.score * 0.5 };
+        }
+      }
+    }
+
+    return bestMatch;
   }
 }
 

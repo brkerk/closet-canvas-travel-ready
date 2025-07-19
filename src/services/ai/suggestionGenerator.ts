@@ -3,52 +3,58 @@ import type { Classification } from '@/types/garment';
 
 export class SuggestionGeneratorService {
   generateSuggestedName(garmentType: string, color: string): string {
-    const typeNames: Record<string, string[]> = {
-      'Tops': ['T-Shirt', 'Blouse', 'Shirt', 'Tank Top', 'Sweater'],
-      'Bottoms': ['Jeans', 'Pants', 'Shorts', 'Skirt', 'Trousers'],
-      'Outerwear': ['Jacket', 'Coat', 'Blazer', 'Cardigan', 'Hoodie'],
-      'Dresses': ['Dress', 'Gown', 'Sundress', 'Maxi Dress'],
-      'Shoes': ['Sneakers', 'Boots', 'Sandals', 'Heels', 'Flats'],
-      'Accessories': ['Scarf', 'Belt', 'Hat', 'Bag', 'Jewelry']
+    const typeNames = {
+      'Tops': ['Shirt', 'Blouse', 'Top', 'Tee'],
+      'Bottoms': ['Pants', 'Trousers', 'Jeans', 'Shorts'],
+      'Outerwear': ['Jacket', 'Coat', 'Blazer', 'Cardigan'],
+      'Dresses': ['Dress', 'Gown', 'Sundress'],
+      'Shoes': ['Shoes', 'Sneakers', 'Boots', 'Sandals'],
+      'Accessories': ['Accessory', 'Belt', 'Bag', 'Scarf']
     };
 
-    const typeOptions = typeNames[garmentType] || ['Item'];
-    const randomType = typeOptions[Math.floor(Math.random() * typeOptions.length)];
+    const names = typeNames[garmentType as keyof typeof typeNames] || ['Item'];
+    const randomName = names[Math.floor(Math.random() * names.length)];
     
-    return color !== 'Unknown' ? `${color} ${randomType}` : randomType;
+    return color !== 'Unknown' ? `${color} ${randomName}` : randomName;
   }
 
   generateSuggestedTags(garmentType: string, classifications: Classification[]): string[] {
-    const tags = new Set<string>();
+    const baseTags: string[] = [];
     
     // Add type-based tags
-    const typeTags: Record<string, string[]> = {
-      'Tops': ['casual', 'everyday'],
-      'Bottoms': ['comfort', 'versatile'],
-      'Outerwear': ['layering', 'weather'],
-      'Dresses': ['formal', 'occasion'],
-      'Shoes': ['footwear', 'comfort'],
-      'Accessories': ['accent', 'style']
+    const typeTags = {
+      'Tops': ['casual', 'everyday', 'comfortable'],
+      'Bottoms': ['versatile', 'essential', 'basic'],
+      'Outerwear': ['layering', 'weather', 'stylish'],
+      'Dresses': ['elegant', 'feminine', 'occasion'],
+      'Shoes': ['footwear', 'comfortable', 'daily'],
+      'Accessories': ['accent', 'finishing-touch', 'style']
     };
 
-    const typeSpecificTags = typeTags[garmentType] || [];
-    typeSpecificTags.forEach(tag => tags.add(tag));
+    baseTags.push(...(typeTags[garmentType as keyof typeof typeTags] || ['clothing']));
 
-    // Add classification-based tags
-    classifications.slice(0, 2).forEach(classification => {
-      const label = classification.label.toLowerCase();
-      if (label.includes('formal') || label.includes('suit')) {
-        tags.add('formal');
-      }
-      if (label.includes('casual') || label.includes('jean')) {
-        tags.add('casual');
-      }
-      if (label.includes('sport') || label.includes('athletic')) {
-        tags.add('athletic');
-      }
-    });
+    // Add tags based on AI classifications
+    if (classifications && classifications.length > 0) {
+      const topClassification = classifications[0];
+      const label = topClassification.label.toLowerCase();
+      
+      // Extract meaningful keywords from the classification
+      const keywords = label.split(/[\s,.-]+/).filter(word => 
+        word.length > 2 && 
+        !['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'].includes(word)
+      );
+      
+      // Add up to 2 keywords as tags
+      baseTags.push(...keywords.slice(0, 2));
+    }
 
-    return Array.from(tags);
+    // Add seasonal/occasion tags
+    const occasionTags = ['work', 'casual', 'formal', 'weekend'];
+    baseTags.push(occasionTags[Math.floor(Math.random() * occasionTags.length)]);
+
+    // Remove duplicates and limit to 5 tags
+    const uniqueTags = Array.from(new Set(baseTags));
+    return uniqueTags.slice(0, 5);
   }
 }
 
