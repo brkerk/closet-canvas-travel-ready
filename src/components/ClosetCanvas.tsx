@@ -17,6 +17,8 @@ interface ClosetCanvasProps {
   onModuleMove: (moduleId: string, newPosition: CanvasPosition) => void;
   onModuleResize: (moduleId: string, newSize: CanvasSize) => void;
   onModuleRemove: (moduleId: string) => void;
+  showAssignmentHighlights?: boolean;
+  autoAssignments?: any[];
 }
 
 export const ClosetCanvas = ({
@@ -26,6 +28,8 @@ export const ClosetCanvas = ({
   onModuleMove,
   onModuleResize,
   onModuleRemove,
+  showAssignmentHighlights = false,
+  autoAssignments = [],
 }: ClosetCanvasProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [dragState, setDragState] = useState<{

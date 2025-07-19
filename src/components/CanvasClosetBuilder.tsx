@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ModuleLibrary } from "./ModuleLibrary";
 import { ClosetCanvas } from "./ClosetCanvas";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Save, HelpCircle } from "lucide-react";
+import { RotateCcw, Save, HelpCircle, Wand2, Users } from "lucide-react";
 import { 
   CanvasModule, 
   CanvasPosition, 
@@ -13,8 +13,15 @@ import {
   GarmentPreview 
 } from "@/utils/canvasUtils";
 import { ClosetModuleData } from "./ClosetModule";
+import { useGarmentStore } from "@/hooks/useGarmentStore";
+import { GarmentAutoAssignmentService, AutoAssignmentResult } from "@/services/garmentAutoAssignment";
+import { toast } from "sonner";
 
 export const CanvasClosetBuilder = () => {
+  const { garments } = useGarmentStore();
+  const [autoAssignments, setAutoAssignments] = useState<AutoAssignmentResult[]>([]);
+  const [showAssignmentHighlights, setShowAssignmentHighlights] = useState(true);
+
   // Create an example closet layout similar to the reference image
   const createExampleLayout = (): CanvasModule[] => {
     const exampleModules: CanvasModule[] = [
@@ -25,10 +32,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 20, y: 20 },
         size: { width: 120, height: 80 },
         capacity: 8,
-        items: [
-          { id: "box1", name: "Storage Box", color: "#8B5CF6", type: "accessory" },
-          { id: "box2", name: "Winter Clothes", color: "#6366F1", type: "accessory" },
-        ],
+        items: [],
       },
       {
         id: "example-shelf-2",
@@ -36,9 +40,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 160, y: 20 },
         size: { width: 120, height: 80 },
         capacity: 8,
-        items: [
-          { id: "box3", name: "Seasonal Items", color: "#8B5CF6", type: "accessory" },
-        ],
+        items: [],
       },
       {
         id: "example-shelf-3",
@@ -46,9 +48,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 300, y: 20 },
         size: { width: 120, height: 80 },
         capacity: 8,
-        items: [
-          { id: "box4", name: "Bags & Purses", color: "#EC4899", type: "accessory" },
-        ],
+        items: [],
       },
       
       // Left side - Long hanging rod
@@ -58,11 +58,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 20, y: 120 },
         size: { width: 140, height: 200 },
         capacity: 12,
-        items: [
-          { id: "dress1", name: "Evening Dress", color: "#1F2937", type: "dress" },
-          { id: "coat1", name: "Winter Coat", color: "#374151", type: "jacket" },
-          { id: "dress2", name: "Summer Dress", color: "#F59E0B", type: "dress" },
-        ],
+        items: [],
       },
       
       // Center - Short hanging rod
@@ -72,11 +68,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 180, y: 120 },
         size: { width: 140, height: 140 },
         capacity: 12,
-        items: [
-          { id: "shirt1", name: "Business Shirt", color: "#3B82F6", type: "shirt" },
-          { id: "blouse1", name: "Silk Blouse", color: "#EC4899", type: "shirt" },
-          { id: "jacket1", name: "Blazer", color: "#1F2937", type: "jacket" },
-        ],
+        items: [],
       },
       
       // Right side - Folded clothes shelves
@@ -86,10 +78,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 340, y: 120 },
         size: { width: 120, height: 60 },
         capacity: 8,
-        items: [
-          { id: "sweater1", name: "Wool Sweater", color: "#6B7280", type: "shirt" },
-          { id: "tshirt1", name: "Cotton T-Shirt", color: "#F9FAFB", type: "shirt" },
-        ],
+        items: [],
       },
       {
         id: "example-shelf-5",
@@ -97,10 +86,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 340, y: 200 },
         size: { width: 120, height: 60 },
         capacity: 8,
-        items: [
-          { id: "sweater2", name: "Cardigan", color: "#EF4444", type: "shirt" },
-          { id: "tshirt2", name: "V-neck Tee", color: "#10B981", type: "shirt" },
-        ],
+        items: [],
       },
       
       // Center bottom - More shelves for folded clothes
@@ -110,10 +96,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 180, y: 280 },
         size: { width: 140, height: 60 },
         capacity: 8,
-        items: [
-          { id: "jeans1", name: "Blue Jeans", color: "#1E40AF", type: "pants" },
-          { id: "pants1", name: "Chinos", color: "#92400E", type: "pants" },
-        ],
+        items: [],
       },
       
       // Bottom row - Drawers
@@ -123,10 +106,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 20, y: 340 },
         size: { width: 120, height: 80 },
         capacity: 20,
-        items: [
-          { id: "underwear1", name: "Undergarments", color: "#F3F4F6", type: "accessory" },
-          { id: "socks1", name: "Socks", color: "#374151", type: "accessory" },
-        ],
+        items: [],
       },
       {
         id: "example-drawer-2",
@@ -134,10 +114,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 160, y: 340 },
         size: { width: 120, height: 80 },
         capacity: 20,
-        items: [
-          { id: "belt1", name: "Leather Belt", color: "#92400E", type: "accessory" },
-          { id: "scarf1", name: "Silk Scarf", color: "#EC4899", type: "accessory" },
-        ],
+        items: [],
       },
       {
         id: "example-drawer-3",
@@ -145,9 +122,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 300, y: 340 },
         size: { width: 120, height: 80 },
         capacity: 20,
-        items: [
-          { id: "ties1", name: "Neckties", color: "#1F2937", type: "accessory" },
-        ],
+        items: [],
       },
       
       // Right side - Shoe rack
@@ -157,11 +132,7 @@ export const CanvasClosetBuilder = () => {
         position: { x: 480, y: 120 },
         size: { width: 100, height: 140 },
         capacity: 6,
-        items: [
-          { id: "shoes1", name: "High Heels", color: "#1F2937", type: "shoes" },
-          { id: "shoes2", name: "Sneakers", color: "#EF4444", type: "shoes" },
-          { id: "shoes3", name: "Boots", color: "#92400E", type: "shoes" },
-        ],
+        items: [],
       },
       
       // Accessories hooks
@@ -171,17 +142,21 @@ export const CanvasClosetBuilder = () => {
         position: { x: 480, y: 280 },
         size: { width: 100, height: 80 },
         capacity: 5,
-        items: [
-          { id: "bag1", name: "Handbag", color: "#92400E", type: "accessory" },
-          { id: "necklace1", name: "Jewelry", color: "#F59E0B", type: "accessory" },
-        ],
+        items: [],
       },
     ];
     
     return exampleModules;
   };
 
-  const [modules, setModules] = useState<CanvasModule[]>(createExampleLayout());
+  const [modules, setModules] = useState<CanvasModule[]>(() => {
+    const initialModules = createExampleLayout();
+    // Auto-assign garments to the initial layout
+    const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, initialModules);
+    setAutoAssignments(assignments);
+    return updatedModules;
+  });
+  
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(true);
 
@@ -228,6 +203,31 @@ export const CanvasClosetBuilder = () => {
     return items.slice(0, count);
   };
 
+  // Auto-assignment functions
+  const autoAssignGarments = () => {
+    const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, modules);
+    setModules(updatedModules);
+    setAutoAssignments(assignments);
+    
+    toast.success(`Auto-assigned ${assignments.length} garments to appropriate modules!`, {
+      description: "Review the assignments and make manual adjustments as needed."
+    });
+  };
+
+  const clearAutoAssignments = () => {
+    // Remove all auto-assigned items
+    const clearedModules = modules.map(module => ({
+      ...module,
+      items: module.items.filter(item => !item.isAutoAssigned)
+    }));
+    setModules(clearedModules);
+    setAutoAssignments([]);
+    
+    toast.info("Cleared all auto-assigned garments", {
+      description: "Manual assignments remain in place."
+    });
+  };
+
   const addModule = (moduleType: ClosetModuleData["type"]) => {
     const moduleStyle = MODULE_STYLES[moduleType];
     const newModule: CanvasModule = {
@@ -236,16 +236,23 @@ export const CanvasClosetBuilder = () => {
       position: { x: 0, y: 0 },
       size: moduleStyle.minSize,
       capacity: getModuleCapacity(moduleType),
-      items: getSampleGarments(moduleType),
+      items: [], // Start empty, let auto-assignment handle it
     };
 
     const position = findBestCanvasPosition(newModule.size, modules);
     if (position) {
-      setModules(prev => [...prev, { ...newModule, position }]);
+      const newModules = [...modules, { ...newModule, position }];
+      setModules(newModules);
       setSelectedModule(newModule.id);
+      
+      // Trigger auto-assignment for the new module
+      const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, newModules);
+      setModules(updatedModules);
+      setAutoAssignments(prev => [...prev, ...assignments]);
     } else {
-      // Show user feedback that no space is available
-      alert("No space available for this module. Try clearing some space or removing other modules first.");
+      toast.error("No space available for this module", {
+        description: "Try clearing some space or removing other modules first."
+      });
     }
   };
 
@@ -271,11 +278,15 @@ export const CanvasClosetBuilder = () => {
   const clearCloset = () => {
     setModules([]);
     setSelectedModule(null);
+    setAutoAssignments([]);
   };
 
   const resetToExample = () => {
-    setModules(createExampleLayout());
+    const freshLayout = createExampleLayout();
+    const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, freshLayout);
+    setModules(updatedModules);
     setSelectedModule(null);
+    setAutoAssignments(assignments);
   };
 
   const saveCloset = () => {
@@ -320,6 +331,16 @@ export const CanvasClosetBuilder = () => {
             >
               <HelpCircle className="w-4 h-4 mr-2" />
               Tips
+            </Button>
+            <Button
+              variant="outline"
+              onClick={autoAssignGarments}
+              className="flex-1 sm:flex-none"
+              size="sm"
+              disabled={garments.length === 0 || modules.length === 0}
+            >
+              <Wand2 className="w-4 h-4 mr-2" />
+              Auto-Assign
             </Button>
             <Button
               variant="outline"
@@ -377,10 +398,12 @@ export const CanvasClosetBuilder = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-700">
               <div>• Start with the example layout provided</div>
+              <div>• Click "Auto-Assign" to place your garments automatically</div>
               <div>• Add or remove modules to match your closet</div>
               <div>• Drag modules to reposition them</div>
               <div>• Resize modules by dragging corners</div>
-              <div>• Use "Example" button to reset to sample layout</div>
+              <div>• Green checkmarks show auto-assigned items</div>
+              <div>• Manually adjust assignments as needed</div>
               <div>• Save your design when you're happy with it</div>
             </div>
           </div>
@@ -402,9 +425,85 @@ export const CanvasClosetBuilder = () => {
             onModuleMove={moveModule}
             onModuleResize={resizeModule}
             onModuleRemove={removeModule}
+            showAssignmentHighlights={showAssignmentHighlights}
+            autoAssignments={autoAssignments}
           />
         </div>
       </div>
+
+      {/* Auto-Assignment Status Panel */}
+      {autoAssignments.length > 0 && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-6 border border-green-200">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-green-800 text-base flex items-center gap-2">
+              <Wand2 className="w-5 h-5" />
+              Auto-Assignment Results
+            </h3>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAssignmentHighlights(!showAssignmentHighlights)}
+                className="text-green-700 border-green-300 hover:bg-green-100"
+              >
+                {showAssignmentHighlights ? 'Hide' : 'Show'} Highlights
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearAutoAssignments}
+                className="text-red-700 border-red-300 hover:bg-red-100"
+              >
+                Clear Auto-Assignments
+              </Button>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-green-800 font-medium">{autoAssignments.length} garments auto-assigned</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-green-600" />
+                <span className="text-green-700">{garments.length} total garments</span>
+              </div>
+            </div>
+            
+            {/* Assignment Summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+              {autoAssignments.slice(0, 6).map((assignment, index) => {
+                const garment = garments.find(g => g.id === assignment.garmentId);
+                const module = modules.find(m => m.id === assignment.moduleId);
+                if (!garment || !module) return null;
+                
+                return (
+                  <div key={index} className="bg-white rounded-lg p-3 border border-green-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div 
+                        className="w-3 h-3 rounded-full border border-gray-300"
+                        style={{ backgroundColor: garment.color.toLowerCase() }}
+                      />
+                      <span className="font-medium text-gray-800 truncate">{garment.name}</span>
+                    </div>
+                    <div className="text-xs text-green-700 mb-1">{assignment.reason}</div>
+                    <div className="text-xs text-gray-500">
+                      Confidence: {Math.round(assignment.confidence * 100)}%
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {autoAssignments.length > 6 && (
+              <div className="text-sm text-green-700 text-center">
+                and {autoAssignments.length - 6} more assignments...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Enhanced Statistics */}
       <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-100">

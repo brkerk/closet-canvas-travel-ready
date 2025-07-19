@@ -15,6 +15,7 @@ export interface GarmentPreview {
   color: string;
   type: "shirt" | "pants" | "dress" | "jacket" | "shoes" | "accessory";
   thumbnail?: string;
+  isAutoAssigned?: boolean; // New field to track auto-assigned items
 }
 
 export interface CanvasModule {

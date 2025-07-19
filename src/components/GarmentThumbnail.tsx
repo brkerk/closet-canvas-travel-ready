@@ -26,16 +26,27 @@ export const GarmentThumbnail = ({ garment, size = "md" }: GarmentThumbnailProps
 
   return (
     <div 
-      className={`${sizeClasses[size]} rounded-lg border-2 border-white/30 flex items-center justify-center shadow-sm backdrop-blur-sm`}
+      className={`${sizeClasses[size]} rounded-lg border-2 flex items-center justify-center shadow-sm backdrop-blur-sm relative ${
+        garment.isAutoAssigned 
+          ? 'border-green-400 bg-green-100/80' 
+          : 'border-white/30'
+      }`}
       style={{ 
-        backgroundColor: `${garment.color}aa`,
-        borderColor: garment.color
+        backgroundColor: garment.isAutoAssigned ? undefined : `${garment.color}aa`,
+        borderColor: garment.isAutoAssigned ? '#4ade80' : garment.color
       }}
-      title={garment.name}
+      title={`${garment.name}${garment.isAutoAssigned ? ' (Auto-assigned)' : ''}`}
     >
-      <span className="text-white drop-shadow-sm">
+      <span className={`drop-shadow-sm ${garment.isAutoAssigned ? 'text-green-800' : 'text-white'}`}>
         {getGarmentIcon()}
       </span>
+      
+      {/* Auto-assignment indicator */}
+      {garment.isAutoAssigned && (
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white flex items-center justify-center">
+          <span className="text-white text-xs font-bold">✓</span>
+        </div>
+      )}
     </div>
   );
 };
