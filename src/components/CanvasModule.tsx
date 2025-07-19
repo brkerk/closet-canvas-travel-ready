@@ -111,7 +111,7 @@ export const CanvasModule = ({
             {[...Array(Math.min(4, Math.floor(module.size.height / 40)))].map((_, i) => {
               const y = 20 + i * (module.size.height - 40) / Math.max(1, Math.min(3, Math.floor(module.size.height / 40) - 1));
               return (
-                <g key={i}>
+                <g key={`shelf-${i}-${module.id}`}>
                   <line 
                     x1="4" y1={y} x2={module.size.width - 4} y2={y}
                     stroke="#334155" strokeWidth="2"
@@ -132,7 +132,7 @@ export const CanvasModule = ({
               const height = (module.size.height - 16) / Math.min(3, Math.floor(module.size.height / 50));
               const y = 8 + i * height;
               return (
-                <g key={i}>
+                <g key={`drawer-${i}-${module.id}`}>
                   <rect 
                     x="6" y={y} 
                     width={module.size.width - 12} height={height - 4}
