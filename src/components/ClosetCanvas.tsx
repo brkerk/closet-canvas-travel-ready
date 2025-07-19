@@ -125,10 +125,11 @@ export const ClosetCanvas = ({
       
       <div
         ref={canvasRef}
-        className="relative border-2 border-gray-200 rounded-lg overflow-hidden cursor-crosshair"
+        className="relative border-2 border-gray-200 rounded-lg overflow-hidden cursor-crosshair w-full max-w-full"
         style={{
-          width: CANVAS_CONFIG.width,
-          height: CANVAS_CONFIG.height,
+          width: '100%',
+          maxWidth: CANVAS_CONFIG.width,
+          height: Math.min(CANVAS_CONFIG.height, window.innerHeight * 0.6),
           backgroundImage: gridPattern,
           backgroundColor: '#FAFAFA'
         }}
