@@ -9,13 +9,21 @@ export interface CanvasSize {
   height: number;
 }
 
+export interface GarmentPreview {
+  id: string;
+  name: string;
+  color: string;
+  type: "shirt" | "pants" | "dress" | "jacket" | "shoes" | "accessory";
+  thumbnail?: string;
+}
+
 export interface CanvasModule {
   id: string;
   type: "hanging-rod" | "shelves" | "drawers" | "shoe-rack" | "accessory-hooks";
   position: CanvasPosition;
   size: CanvasSize;
   capacity: number;
-  items: string[];
+  items: GarmentPreview[];
 }
 
 export const CANVAS_CONFIG = {

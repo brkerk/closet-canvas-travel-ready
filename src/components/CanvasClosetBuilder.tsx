@@ -9,7 +9,8 @@ import {
   CanvasPosition, 
   CanvasSize, 
   MODULE_STYLES, 
-  findBestCanvasPosition 
+  findBestCanvasPosition,
+  GarmentPreview 
 } from "@/utils/canvasUtils";
 import { ClosetModuleData } from "./ClosetModule";
 
@@ -29,6 +30,38 @@ export const CanvasClosetBuilder = () => {
     return capacities[type];
   };
 
+  const getSampleGarments = (moduleType: ClosetModuleData["type"]): GarmentPreview[] => {
+    const garmentLibrary = {
+      "hanging-rod": [
+        { id: "g1", name: "Blue Shirt", color: "#3B82F6", type: "shirt" as const },
+        { id: "g2", name: "Black Dress", color: "#1F2937", type: "dress" as const },
+        { id: "g3", name: "Green Jacket", color: "#10B981", type: "jacket" as const },
+      ],
+      "shelves": [
+        { id: "g4", name: "White T-Shirt", color: "#F9FAFB", type: "shirt" as const },
+        { id: "g5", name: "Gray Sweater", color: "#6B7280", type: "shirt" as const },
+      ],
+      "drawers": [
+        { id: "g6", name: "Blue Jeans", color: "#1E40AF", type: "pants" as const },
+        { id: "g7", name: "Black Pants", color: "#111827", type: "pants" as const },
+        { id: "g8", name: "Brown Belt", color: "#92400E", type: "accessory" as const },
+      ],
+      "shoe-rack": [
+        { id: "g9", name: "Sneakers", color: "#EF4444", type: "shoes" as const },
+        { id: "g10", name: "Black Boots", color: "#1F2937", type: "shoes" as const },
+      ],
+      "accessory-hooks": [
+        { id: "g11", name: "Leather Bag", color: "#92400E", type: "accessory" as const },
+        { id: "g12", name: "Silver Watch", color: "#9CA3AF", type: "accessory" as const },
+      ],
+    };
+    
+    const items = garmentLibrary[moduleType] || [];
+    // Randomly select 1-3 items for demonstration
+    const count = Math.min(Math.floor(Math.random() * 3) + 1, items.length);
+    return items.slice(0, count);
+  };
+
   const addModule = (moduleType: ClosetModuleData["type"]) => {
     const moduleStyle = MODULE_STYLES[moduleType];
     const newModule: CanvasModule = {
@@ -37,7 +70,7 @@ export const CanvasClosetBuilder = () => {
       position: { x: 0, y: 0 },
       size: moduleStyle.minSize,
       capacity: getModuleCapacity(moduleType),
-      items: [],
+      items: getSampleGarments(moduleType),
     };
 
     const position = findBestCanvasPosition(newModule.size, modules);
