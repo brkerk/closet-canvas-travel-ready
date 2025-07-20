@@ -1,0 +1,50 @@
+{
+  "appInformation": {
+    "name": "Digital Closet",
+    "subtitle": "Smart Wardrobe Management",
+    "description": "Transform your wardrobe management with Digital Closet - the smart way to organize, catalog, and style your clothing collection.\n\nFEATURES:\n• 📸 AI-Powered Camera: Instantly capture and categorize your clothing with advanced image recognition\n• 🏗️ Custom Closet Builder: Design your ideal closet layout with modular components\n• 👔 Smart Organization: Automatically sort items by type, color, and season\n• ✨ AI Style Recommendations: Get personalized outfit suggestions based on weather, occasion, and your style preferences\n• 📱 Mobile-First Design: Optimized for iOS with intuitive touch controls and native camera integration\n• 🎨 Beautiful Interface: Clean, modern design that makes wardrobe management enjoyable\n\nWhether you're a fashion enthusiast, someone who travels frequently, or just wants to better organize your closet, Digital Closet helps you make the most of your wardrobe.\n\nKey Benefits:\n- Save time choosing outfits\n- Discover forgotten pieces in your wardrobe\n- Plan outfits for trips and special occasions\n- Track your clothing collection and shopping habits\n- Reduce decision fatigue with smart suggestions\n\nDigital Closet uses advanced AI to understand your style preferences and suggest outfits that work for any occasion. The intuitive design makes it easy to add new items, organize your collection, and find the perfect outfit in seconds.\n\nDownload Digital Closet today and revolutionize how you interact with your wardrobe!",
+    "keywords": [
+      "closet",
+      "wardrobe",
+      "fashion",
+      "clothing",
+      "organizer",
+      "outfit",
+      "style",
+      "AI",
+      "camera",
+      "catalog"
+    ],
+    "category": "Lifestyle",
+    "ageRating": "4+"
+  },
+  "technicalInfo": {
+    "bundleId": "app.lovable.1054bee995584bbdb96118bd9dafe38e",
+    "version": "1.0.0",
+    "buildNumber": "1",
+    "minimumOSVersion": "14.0",
+    "deviceSupport": [
+      "iPhone",
+      "iPad"
+    ],
+    "orientations": [
+      "Portrait",
+      "Portrait Upside Down"
+    ]
+  },
+  "appStoreOptimization": {
+    "primaryKeyword": "digital closet",
+    "secondaryKeywords": [
+      "wardrobe organizer",
+      "fashion app",
+      "outfit planner",
+      "clothing catalog",
+      "style assistant"
+    ],
+    "competitorApps": [
+      "Stylebook",
+      "Cladwell",
+      "Your Closet"
+    ]
+  }
+}

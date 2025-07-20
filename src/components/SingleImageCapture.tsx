@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Camera, X, Image as ImageIcon } from "lucide-react";
 import { NativeCameraService } from "@/services/nativeCamera";
+import { NativeFeatures } from "@/services/nativeFeatures";
 import { Button } from "@/components/ui/button";
 
 interface CapturedImage {
@@ -48,14 +49,17 @@ export const SingleImageCapture = ({ onImageChange }: SingleImageCaptureProps) =
   };
 
   const handleNativeCamera = async () => {
+    await NativeFeatures.vibrateMedium();
     const capturedImage = await NativeCameraService.takePicture();
     if (capturedImage) {
       setImage(capturedImage);
       onImageChange(capturedImage);
+      await NativeFeatures.vibrateLight();
     }
   };
 
   const handleNativeGallery = async () => {
+    await NativeFeatures.vibrateLight();
     const selectedImage = await NativeCameraService.selectFromGallery();
     if (selectedImage) {
       setImage(selectedImage);

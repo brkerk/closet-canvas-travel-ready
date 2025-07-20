@@ -4,6 +4,7 @@ import { MobileClosetBuilder } from "@/components/MobileClosetBuilder";
 import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
+import { NativeFeatures } from "@/services/nativeFeatures";
 import { Camera, Shirt, Home, Sparkles } from "lucide-react";
 
 const Index = () => {
@@ -11,17 +12,23 @@ const Index = () => {
   const [isNative, setIsNative] = useState(false);
 
   useEffect(() => {
-    // Detect if running in Capacitor (native app)
-    const checkNativeEnvironment = async () => {
+    // Initialize native features and detect environment
+    const initializeApp = async () => {
       try {
         const { Capacitor } = await import('@capacitor/core');
-        setIsNative(Capacitor.isNativePlatform());
+        const nativePlatform = Capacitor.isNativePlatform();
+        setIsNative(nativePlatform);
+        
+        // Initialize native features if on native platform
+        if (nativePlatform) {
+          await NativeFeatures.initialize();
+        }
       } catch (error) {
         console.log('Not running in native environment');
       }
     };
 
-    checkNativeEnvironment();
+    initializeApp();
   }, []);
 
   const renderActiveTab = () => {
@@ -72,7 +79,13 @@ const Index = () => {
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
-              onClick={() => setActiveTab(id)}
+              onClick={async () => {
+                // Add haptic feedback for native apps
+                if (isNative) {
+                  await NativeFeatures.vibrateLight();
+                }
+                setActiveTab(id);
+              }}
               className={`flex flex-col items-center py-3 px-4 rounded-2xl transition-all duration-200 ${
                 activeTab === id
                   ? "bg-blue-50 text-blue-600 scale-105"
