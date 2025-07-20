@@ -67,49 +67,59 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Snap to grid and nearby module edges
+// Snap to grid and find closest module edges independently for each axis
 export const snapToModulesAndGrid = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
   snapDistance: number = 15
 ): CanvasPosition => {
-  // First snap to grid
-  let x = snapToGrid(position.x);
-  let y = snapToGrid(position.y);
+  const { gridSize, width: canvasW, height: canvasH } = CANVAS_CONFIG;
+  const origX = snapToGrid(position.x, gridSize);
+  const origY = snapToGrid(position.y, gridSize);
 
-  // Then snap to nearby module edges
-  for (const module of modules) {
-    const moduleLeft = module.position.x;
-    const moduleRight = module.position.x + module.size.width;
-    const moduleTop = module.position.y;
-    const moduleBottom = module.position.y + module.size.height;
+  let bestX = origX;
+  let bestY = origY;
+  let minDeltaX = snapDistance + 1;
+  let minDeltaY = snapDistance + 1;
 
-    // Snap to right edge of existing module (place new module to the right)
-    if (Math.abs(x - moduleRight) < snapDistance) {
-      x = moduleRight;
-    }
-    
-    // Snap to left edge of existing module (place new module to the left)
-    if (Math.abs(x + size.width - moduleLeft) < snapDistance) {
-      x = moduleLeft - size.width;
-    }
-    
-    // Snap to bottom edge of existing module (place new module below)
-    if (Math.abs(y - moduleBottom) < snapDistance) {
-      y = moduleBottom;
-    }
-    
-    // Snap to top edge of existing module (place new module above)
-    if (Math.abs(y + size.height - moduleTop) < snapDistance) {
-      y = moduleTop - size.height;
-    }
-  }
+  modules.forEach(mod => {
+    const left = mod.position.x;
+    const right = left + mod.size.width;
+    const top = mod.position.y;
+    const bottom = top + mod.size.height;
 
-  // Ensure it stays within canvas boundaries
+    // x-axis candidates: our left edge to mod.right, our right to mod.left
+    [
+      { candidate: right, delta: Math.abs(origX - right) },
+      { candidate: left - size.width, delta: Math.abs(origX - (left - size.width)) }
+    ].forEach(({ candidate, delta }) => {
+      if (delta < minDeltaX) {
+        minDeltaX = delta;
+        bestX = candidate;
+      }
+    });
+
+    // y-axis candidates: our top to mod.bottom, our bottom to mod.top
+    [
+      { candidate: bottom, delta: Math.abs(origY - bottom) },
+      { candidate: top - size.height, delta: Math.abs(origY - (top - size.height)) }
+    ].forEach(({ candidate, delta }) => {
+      if (delta < minDeltaY) {
+        minDeltaY = delta;
+        bestY = candidate;
+      }
+    });
+  });
+
+  // If closest edge is within snapDistance, use it; otherwise keep grid snap
+  const finalX = minDeltaX <= snapDistance ? bestX : origX;
+  const finalY = minDeltaY <= snapDistance ? bestY : origY;
+
+  // Finally ensure canvas boundaries
   return {
-    x: Math.max(0, Math.min(x, CANVAS_CONFIG.width - size.width)),
-    y: Math.max(0, Math.min(y, CANVAS_CONFIG.height - size.height))
+    x: Math.max(0, Math.min(finalX, canvasW - size.width)),
+    y: Math.max(0, Math.min(finalY, canvasH - size.height))
   };
 };
 
