@@ -143,68 +143,84 @@ export const MobileClosetBuilder = () => {
       </div>
 
       {/* Canvas Area */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full bg-white border-t border-gray-200">
-          {/* Canvas Header */}
-          <div className="p-3 border-b border-gray-100">
-            <h3 className="text-base font-semibold text-gray-800">Closet Elevation View</h3>
-            <p className="text-sm text-gray-600">Blueprint-style 2D closet design - snap modules together to build your layout</p>
-          </div>
+      <div className="flex-1 overflow-hidden bg-white">
+        {/* Canvas Header */}
+        <div className="p-3 border-b border-gray-100">
+          <h3 className="text-base font-semibold text-gray-800">Closet Elevation View</h3>
+          <p className="text-sm text-gray-600">Tap modules below to add them, then drag to arrange</p>
+        </div>
 
-          {/* Simple Canvas */}
-          <div className="relative h-full bg-gray-50 overflow-auto">
-            <div 
-              className="relative min-h-full"
-              style={{ 
-                width: '100%',
-                minHeight: '400px',
-                background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)'
-              }}
-            >
-              {/* Simple floor line */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <line 
-                  x1="0" 
-                  y1="380" 
-                  x2="100%" 
-                  y2="380"
-                  stroke="rgba(0,0,0,0.2)" 
-                  strokeWidth="2"
-                />
-              </svg>
-
-              {/* Modules */}
-              {modules.map((module) => (
-                <CanvasModuleComponent
-                  key={module.id}
-                  module={module}
-                  isSelected={selectedModule === module.id}
-                  onSelect={() => setSelectedModule(module.id)}
-                  onRemove={() => removeModule(module.id)}
-                  onUpdatePosition={(position) => moveModule(module.id, position)}
-                  onUpdateSize={(size) => resizeModule(module.id, size)}
-                  allModules={modules}
-                />
-              ))}
-
-              {/* Empty state */}
-              {modules.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-gray-500 p-4">
-                    <div className="text-3xl mb-3">📐</div>
-                    <p className="text-lg font-medium mb-2">Start Your Closet Design</p>
-                    <p className="text-sm">Add modules below to create your layout</p>
-                  </div>
-                </div>
-              )}
-            </div>
+        {/* Mobile Module Library - Horizontal Scroll */}
+        <div className="p-3 border-b border-gray-100">
+          <h4 className="text-sm font-medium text-gray-700 mb-2">Add Storage Modules</h4>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {[
+              { type: "hanging-rod", icon: "👔", name: "Hanging Rod", color: "bg-blue-100" },
+              { type: "shelves", icon: "📚", name: "Shelves", color: "bg-green-100" },
+              { type: "drawers", icon: "🗃️", name: "Drawers", color: "bg-orange-100" },
+              { type: "shoe-rack", icon: "👟", name: "Shoe Rack", color: "bg-red-100" },
+              { type: "accessory-hooks", icon: "👜", name: "Hooks", color: "bg-purple-100" },
+            ].map(({ type, icon, name, color }) => (
+              <button
+                key={type}
+                onClick={() => addModule(type as ClosetModuleData["type"])}
+                className={`flex-shrink-0 ${color} rounded-lg p-3 min-w-[80px] text-center border border-gray-200 hover:shadow-md transition-all`}
+              >
+                <div className="text-2xl mb-1">{icon}</div>
+                <div className="text-xs font-medium text-gray-700">{name}</div>
+              </button>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Module Library at Bottom */}
-      <div className="bg-white border-t border-gray-200 p-4">
-        <ModuleLibrary onAddModule={addModule} />
+        {/* Simple Canvas */}
+        <div className="flex-1 relative bg-gray-50 overflow-auto">
+          <div 
+            className="relative"
+            style={{ 
+              width: '100%',
+              minHeight: '400px',
+              background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)'
+            }}
+          >
+            {/* Simple floor line */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              <line 
+                x1="0" 
+                y1="380" 
+                x2="100%" 
+                y2="380"
+                stroke="rgba(0,0,0,0.2)" 
+                strokeWidth="2"
+              />
+            </svg>
+
+            {/* Modules */}
+            {modules.map((module) => (
+              <CanvasModuleComponent
+                key={module.id}
+                module={module}
+                isSelected={selectedModule === module.id}
+                onSelect={() => setSelectedModule(module.id)}
+                onRemove={() => removeModule(module.id)}
+                onUpdatePosition={(position) => moveModule(module.id, position)}
+                onUpdateSize={(size) => resizeModule(module.id, size)}
+                allModules={modules}
+              />
+            ))}
+
+            {/* Empty state */}
+            {modules.length === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center text-gray-500 p-4">
+                  <div className="text-3xl mb-3">📐</div>
+                  <p className="text-lg font-medium mb-2">Start Your Closet Design</p>
+                  <p className="text-sm">Tap modules above to create your layout</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Auto-Assignment Status */}
