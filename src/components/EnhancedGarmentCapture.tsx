@@ -2,18 +2,17 @@
 import { useState } from "react";
 import { Camera, Sparkles, Loader2, Wand2 } from "lucide-react";
 import { useGarmentAnalysis } from "@/hooks/useGarmentAnalysis";
-import { MultiAngleCapture } from "./MultiAngleCapture";
+import { SingleImageCapture } from "./SingleImageCapture";
 import { Button } from "@/components/ui/button";
 
 interface CapturedImage {
   id: string;
   url: string;
-  angle: string;
   file: File;
 }
 
 export const EnhancedGarmentCapture = () => {
-  const [images, setImages] = useState<CapturedImage[]>([]);
+  const [image, setImage] = useState<CapturedImage | null>(null);
   const [garmentData, setGarmentData] = useState({
     name: "",
     brand: "",
@@ -33,19 +32,18 @@ export const EnhancedGarmentCapture = () => {
   const occasions = ["Casual", "Work", "Formal", "Sport", "Evening", "Special"];
   const materials = ["Cotton", "Polyester", "Wool", "Silk", "Denim", "Leather", "Linen", "Blend"];
 
-  const handleImagesChange = (newImages: CapturedImage[]) => {
-    setImages(newImages);
+  const handleImageChange = (newImage: CapturedImage | null) => {
+    setImage(newImage);
     clearAnalysis();
   };
 
   const handleAIAnalysis = async () => {
-    const primaryImage = images.find(img => img.id === images[0]?.id) || images[0];
-    if (primaryImage) {
+    if (image) {
       const img = new Image();
       img.onload = async () => {
         await analyzeImage(img);
       };
-      img.src = primaryImage.url;
+      img.src = image.url;
     }
   };
 
@@ -67,11 +65,11 @@ export const EnhancedGarmentCapture = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Saving enhanced garment:", { ...garmentData, images });
+    console.log("Saving enhanced garment:", { ...garmentData, image });
     alert("Garment saved successfully with enhanced data!");
     
     // Reset form
-    setImages([]);
+    setImage(null);
     clearAnalysis();
     setGarmentData({
       name: "",
@@ -96,14 +94,14 @@ export const EnhancedGarmentCapture = () => {
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Multi-Angle Photo Capture */}
+          {/* Single Photo Capture */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Garment Photos
+              Garment Photo
             </label>
-            <MultiAngleCapture onImagesChange={handleImagesChange} />
+            <SingleImageCapture onImageChange={handleImageChange} />
             
-            {images.length > 0 && (
+            {image && (
               <div className="mt-4 flex justify-center">
                 <Button
                   type="button"
@@ -311,7 +309,7 @@ export const EnhancedGarmentCapture = () => {
           {/* Submit Button */}
           <Button
             type="submit"
-            disabled={images.length === 0 || !garmentData.name || !garmentData.color}
+            disabled={!image || !garmentData.name || !garmentData.color}
             className="w-full py-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-medium hover:shadow-lg transition-all disabled:opacity-50"
           >
             Save Enhanced Garment to Closet
@@ -327,9 +325,9 @@ export const EnhancedGarmentCapture = () => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
           <ul className="space-y-2">
-            <li>• 📸 Capture multiple angles for better AI recognition</li>
-            <li>• 💡 Use good lighting and neutral backgrounds</li>
-            <li>• 🎯 Set one image as primary for main identification</li>
+            <li>• 📸 Capture clear photos with good lighting</li>
+            <li>• 💡 Use neutral backgrounds for best results</li>
+            <li>• 🎯 Focus on the garment details</li>
           </ul>
           <ul className="space-y-2">
             <li>• 🏷️ Add detailed tags for better organization</li>
