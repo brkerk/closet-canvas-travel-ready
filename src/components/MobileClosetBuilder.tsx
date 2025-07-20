@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ModuleLibrary } from "./ModuleLibrary";
 import { Button } from "@/components/ui/button";
@@ -41,19 +40,31 @@ export const MobileClosetBuilder = () => {
     const newModule: CanvasModule = {
       id: `module-${Date.now()}`,
       type: moduleType,
-      position: { x: 20 + (modules.length % 2) * 120, y: 20 + Math.floor(modules.length / 2) * 100 }, // Adjusted spacing
-      size: { width: moduleStyle.minSize.width + 20, height: moduleStyle.minSize.height + 20 }, // Slightly larger than minimum
+      position: { x: 0, y: 0 }, // Will be calculated properly
+      size: { width: moduleStyle.minSize.width + 20, height: moduleStyle.minSize.height + 20 },
       capacity: getModuleCapacity(moduleType),
       items: [],
     };
 
-    setModules(prev => [...prev, newModule]);
-    setSelectedModule(newModule.id);
+    // Find the best position for the new module to prevent stacking
+    const position = findBestCanvasPosition(newModule.size, modules, { width: 1200, height: 600 });
     
-    // Auto-assign garments
-    const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, [...modules, newModule]);
-    setModules(updatedModules);
-    setAutoAssignments(prev => [...prev, ...assignments]);
+    if (position) {
+      const finalModule = { ...newModule, position };
+      setModules(prev => [...prev, finalModule]);
+      setSelectedModule(finalModule.id);
+      
+      // Auto-assign garments
+      const { updatedModules, assignments } = GarmentAutoAssignmentService.autoAssignGarments(garments, [...modules, finalModule]);
+      setModules(updatedModules);
+      setAutoAssignments(prev => [...prev, ...assignments]);
+      
+      toast.success(`Added ${moduleType.replace('-', ' ')} module`);
+    } else {
+      toast.error("No space available for this module", {
+        description: "Try clearing some space or removing other modules first."
+      });
+    }
   };
 
   const moveModule = (moduleId: string, newPosition: CanvasPosition) => {
@@ -97,7 +108,7 @@ export const MobileClosetBuilder = () => {
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Mobile Header */}
-      <div className="bg-white p-4 border-b border-gray-200">
+      <div className="bg-white p-4 border-b border-gray-200 flex-shrink-0">
         <h1 className="text-lg font-bold text-gray-800 mb-2">Digital Closet</h1>
         
         {/* Quick Instructions */}
@@ -144,16 +155,16 @@ export const MobileClosetBuilder = () => {
         </div>
       </div>
 
-      {/* Canvas Area */}
-      <div className="flex-1 overflow-hidden bg-white">
+      {/* Canvas Area - Fixed height to prevent collapse */}
+      <div className="flex-1 overflow-hidden bg-white min-h-0">
         {/* Canvas Header */}
-        <div className="p-3 border-b border-gray-100">
+        <div className="p-3 border-b border-gray-100 flex-shrink-0">
           <h3 className="text-base font-semibold text-gray-800">Closet Elevation View</h3>
           <p className="text-sm text-gray-600">Tap modules below to add them, then drag to arrange</p>
         </div>
 
         {/* Mobile Module Library - Horizontal Scroll */}
-        <div className="p-3 border-b border-gray-100">
+        <div className="p-3 border-b border-gray-100 flex-shrink-0">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Add Storage Modules</h4>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {[
@@ -166,7 +177,7 @@ export const MobileClosetBuilder = () => {
               <button
                 key={type}
                 onClick={() => addModule(type as ClosetModuleData["type"])}
-                className={`flex-shrink-0 bg-gradient-to-br ${gradient} rounded-xl p-3 min-w-[80px] text-center border border-white/20 hover:shadow-lg transition-all duration-200 text-white group`}
+                className={`flex-shrink-0 bg-gradient-to-br ${gradient} rounded-xl p-3 min-w-[80px] text-center border border-white/20 hover:shadow-lg transition-all duration-200 text-white group touch-manipulation min-h-[44px]`}
               >
                 <div className="mb-2 flex justify-center">
                   <ModulePreview type={type as ClosetModuleData["type"]} className="w-8 h-8 opacity-90 group-hover:opacity-100 transition-opacity" />
@@ -177,22 +188,24 @@ export const MobileClosetBuilder = () => {
           </div>
         </div>
 
-        {/* Simple Canvas */}
-        <div className="flex-1 relative bg-gradient-to-b from-gray-50 to-gray-100 overflow-auto">
+        {/* Enhanced Canvas with proper height */}
+        <div className="flex-1 relative bg-gradient-to-b from-gray-50 to-gray-100 overflow-auto min-h-0">
           <div 
-            className="relative"
+            className="relative touch-action-pan-x touch-action-pan-y"
             style={{ 
-              width: '100%',
-              minHeight: '400px',
+              width: '1200px',
+              height: '600px',
+              minWidth: '100%',
+              minHeight: '100%',
             }}
           >
             {/* Simple floor line */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               <line 
                 x1="0" 
-                y1="380" 
+                y1="580" 
                 x2="100%" 
-                y2="380"
+                y2="580"
                 stroke="rgba(0,0,0,0.15)" 
                 strokeWidth="2"
                 strokeDasharray="4,4"
@@ -229,7 +242,7 @@ export const MobileClosetBuilder = () => {
 
       {/* Auto-Assignment Status */}
       {autoAssignments.length > 0 && (
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-t border-green-200 p-3">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-t border-green-200 p-3 flex-shrink-0">
           <div className="flex items-center justify-between text-sm">
             <span className="text-green-800 font-medium flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>

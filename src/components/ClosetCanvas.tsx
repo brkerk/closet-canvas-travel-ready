@@ -49,9 +49,9 @@ export const ClosetCanvas = ({
     const contentRect = content.getBoundingClientRect();
     
     // Calculate scale to fit content in wrapper
-    const scaleX = (wrapperRect.width - 40) / contentRect.width; // 40px padding
+    const scaleX = (wrapperRect.width - 40) / contentRect.width;
     const scaleY = (wrapperRect.height - 40) / contentRect.height;
-    const newScale = Math.min(scaleX, scaleY, 1); // Don't scale up
+    const newScale = Math.min(scaleX, scaleY, 1);
     
     setScale(newScale);
     setIsZoomedToFit(true);
@@ -74,7 +74,7 @@ export const ClosetCanvas = ({
     }
   }, [modules.length, isMobile, zoomToFit]);
 
-  // Pinch-to-zoom support for mobile
+  // Enhanced pinch-to-zoom support for mobile
   useEffect(() => {
     if (!isMobile || !wrapperRef.current) return;
 
@@ -112,12 +112,20 @@ export const ClosetCanvas = ({
       }
     };
 
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        initialDistance = 0;
+      }
+    };
+
     wrapper.addEventListener('touchstart', handleTouchStart, { passive: false });
     wrapper.addEventListener('touchmove', handleTouchMove, { passive: false });
+    wrapper.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
       wrapper.removeEventListener('touchstart', handleTouchStart);
       wrapper.removeEventListener('touchmove', handleTouchMove);
+      wrapper.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isMobile, scale]);
 
@@ -128,25 +136,23 @@ export const ClosetCanvas = ({
     }
   }, [onModuleSelect]);
 
-  // Clean background without grid - free-form placement
-  const canvasBackground = '#f5f5f5';
-  
   // Calculate responsive canvas dimensions with proper sizing for scroll
   const getCanvasStyle = () => {
     const baseStyle = {
-      backgroundColor: canvasBackground,
+      backgroundColor: '#f5f5f5',
       backgroundImage: 'none',
       transform: `scale(${scale})`,
       transformOrigin: 'top left',
       transition: 'transform 0.2s ease-out',
-      minHeight: isMobile ? '600px' : '800px', // Ensure enough space for modules
     };
 
     if (isMobile) {
       return {
         ...baseStyle,
-        width: '1200px', // Fixed wide canvas for scrolling
+        width: '1200px',
         height: '600px',
+        minWidth: '1200px',
+        minHeight: '600px',
       };
     }
     
@@ -154,23 +160,9 @@ export const ClosetCanvas = ({
       ...baseStyle,
       width: CANVAS_CONFIG.width,
       height: CANVAS_CONFIG.height,
+      minWidth: CANVAS_CONFIG.width,
+      minHeight: CANVAS_CONFIG.height,
     };
-  };
-
-  // Module container style for responsive layout
-  const getModuleContainerStyle = () => {
-    if (isMobile && modules.length > 3) {
-      return {
-        display: 'flex',
-        flexWrap: 'wrap' as const,
-        gap: '8px',
-        justifyContent: 'flex-start',
-        padding: '8px',
-        width: '100%',
-        height: '100%',
-      };
-    }
-    return {};
   };
 
   return (
@@ -208,17 +200,20 @@ export const ClosetCanvas = ({
         </div>
       </div>
       
-      {/* Canvas Wrapper with Scroll */}
+      {/* Canvas Wrapper with fixed height to prevent collapse */}
       <div
         ref={wrapperRef}
-        className="w-full h-screen overflow-auto relative pointer-events-auto touch-action-pan border-2 border-gray-300 rounded-lg min-h-[400px]"
+        className="w-full overflow-auto relative pointer-events-auto border-2 border-gray-300 rounded-lg"
         style={{
-          WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+          height: isMobile ? '70vh' : '600px', // Fixed height prevents collapse
+          minHeight: isMobile ? '400px' : '600px',
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x pan-y', // Allow pan but prevent zoom
         }}
       >
         <div
           ref={canvasRef}
-          className="relative w-full h-full"
+          className="relative"
           style={getCanvasStyle()}
           onMouseDown={handleMouseDown}
         >
@@ -274,42 +269,19 @@ export const ClosetCanvas = ({
             })()}
           </svg>
 
-          {/* Module Container with Responsive Layout */}
-          <div
-            className={`
-              relative w-full h-full
-              ${isMobile && modules.length > 3 ? 'flex flex-wrap gap-2 p-2 justify-start items-start content-start' : ''}
-            `}
-            style={getModuleContainerStyle()}
-          >
-            {/* Canvas modules */}
-            {modules.map((module, index) => {
-              return (
-                <div
-                  key={module.id}
-                  className={`
-                    ${isMobile && modules.length > 3 ? 'flex-1 min-w-[120px] max-w-[240px] min-h-[80px] relative' : ''}
-                  `}
-                  style={{
-                    ...(isMobile && modules.length > 3 && {
-                      flexBasis: '40%',
-                      touchAction: 'manipulation',
-                    })
-                  }}
-                >
-                  <CanvasModuleComponent
-                    module={module}
-                    isSelected={selectedModule === module.id}
-                    onSelect={() => onModuleSelect(module.id)}
-                    onRemove={() => onModuleRemove(module.id)}
-                    onUpdatePosition={(position) => onModuleMove(module.id, position)}
-                    onUpdateSize={(size) => onModuleResize(module.id, size)}
-                    allModules={modules}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          {/* Canvas modules */}
+          {modules.map((module) => (
+            <CanvasModuleComponent
+              key={module.id}
+              module={module}
+              isSelected={selectedModule === module.id}
+              onSelect={() => onModuleSelect(module.id)}
+              onRemove={() => onModuleRemove(module.id)}
+              onUpdatePosition={(position) => onModuleMove(module.id, position)}
+              onUpdateSize={(size) => onModuleResize(module.id, size)}
+              allModules={modules}
+            />
+          ))}
 
           {/* Empty state - Mobile responsive */}
           {modules.length === 0 && (

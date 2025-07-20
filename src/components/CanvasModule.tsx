@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Rnd } from "react-rnd";
 import { X, Move, RotateCcw } from "lucide-react";
 import { type CanvasModule as CanvasModuleData, MODULE_STYLES, snapToModules } from "@/utils/canvasUtils";
@@ -28,23 +28,41 @@ export const CanvasModule = ({
   const moduleStyle = MODULE_STYLES[module.type];
   const otherModules = allModules.filter(m => m.id !== module.id);
   const isMobile = useIsMobile();
+  
+  // Track drag state for better mobile experience
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleDrag = (e: any, d: { x: number; y: number }) => {
-    // Don't update position during drag to prevent jumping
-    // Only update on drag stop for stable mobile experience
-  };
+  const handleDragStart = useCallback(() => {
+    setIsDragging(true);
+    onSelect(); // Select module when drag starts
+  }, [onSelect]);
 
-  const handleDragStop = (e: any, d: { x: number; y: number }) => {
+  const handleDrag = useCallback((e: any, d: { x: number; y: number }) => {
+    // For mobile, we can provide real-time feedback during drag
+    if (isMobile) {
+      // Throttle updates to prevent performance issues
+      const snappedPosition = snapToModules(
+        { x: d.x, y: d.y },
+        module.size,
+        otherModules,
+        15
+      );
+      onUpdatePosition(snappedPosition);
+    }
+  }, [isMobile, module.size, otherModules, onUpdatePosition]);
+
+  const handleDragStop = useCallback((e: any, d: { x: number; y: number }) => {
+    setIsDragging(false);
     const snappedPosition = snapToModules(
       { x: d.x, y: d.y },
       module.size,
       otherModules,
-      15 // Edge snap distance
+      15
     );
     onUpdatePosition(snappedPosition);
-  };
+  }, [module.size, otherModules, onUpdatePosition]);
 
-  const handleResizeStop = (
+  const handleResizeStop = useCallback((
     e: any,
     direction: any,
     ref: any,
@@ -58,7 +76,14 @@ export const CanvasModule = ({
     
     onUpdateSize(newSize);
     onUpdatePosition(position);
-  };
+  }, [onUpdatePosition, onUpdateSize]);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isDragging) {
+      onSelect();
+    }
+  }, [isDragging, onSelect]);
 
   const renderPattern = () => {
     const patternId = `pattern-${module.id}`;
@@ -129,6 +154,7 @@ export const CanvasModule = ({
     <Rnd
       size={{ width: module.size.width, height: module.size.height }}
       position={{ x: module.position.x, y: module.position.y }}
+      onDragStart={handleDragStart}
       onDrag={handleDrag}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
@@ -152,22 +178,23 @@ export const CanvasModule = ({
       style={{
         border: isSelected ? "2px solid #3B82F6" : "1px solid rgba(255,255,255,0.2)",
         borderRadius: "8px",
-        zIndex: isSelected ? 10 : 1,
+        zIndex: isSelected ? 10 : isDragging ? 8 : 1,
         pointerEvents: 'auto',
+        touchAction: 'none', // Prevent default touch behaviors during drag
       }}
-      onClick={onSelect}
+      onClick={handleClick}
     >
       <div
-        className={`relative w-full h-full text-white rounded-lg flex flex-col justify-between overflow-hidden bg-gradient-to-br ${moduleStyle.gradient} ${moduleStyle.shadow} shadow-lg`}
+        className={`relative w-full h-full text-white rounded-lg flex flex-col justify-between overflow-hidden bg-gradient-to-br ${moduleStyle.gradient} ${moduleStyle.shadow} shadow-lg transition-all duration-200 ${isDragging ? 'shadow-2xl scale-105' : ''}`}
       >
         {/* Pattern overlay */}
         {renderPattern()}
         
-        {/* Header */}
-        <div className={`relative z-10 p-2 flex items-center justify-between bg-black/10 backdrop-blur-sm ${isMobile ? 'drag-handle-mobile min-h-[44px]' : 'drag-handle'}`}>
+        {/* Header - Enhanced for mobile touch */}
+        <div className={`relative z-10 p-2 flex items-center justify-between bg-black/10 backdrop-blur-sm ${isMobile ? 'drag-handle-mobile min-h-[44px] touch-manipulation' : 'drag-handle'}`}>
           <div className="flex items-center gap-2">
-            <Move size={12} className="opacity-60" />
-            <span className="text-xs font-medium capitalize">
+            <Move size={isMobile ? 16 : 12} className="opacity-60" />
+            <span className={`${isMobile ? 'text-sm' : 'text-xs'} font-medium capitalize`}>
               {module.type.replace("-", " ")}
             </span>
           </div>
@@ -176,13 +203,13 @@ export const CanvasModule = ({
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 w-6 p-0 text-white hover:bg-white/20"
+              className={`${isMobile ? 'h-8 w-8' : 'h-6 w-6'} p-0 text-white hover:bg-white/20 touch-manipulation`}
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove();
               }}
             >
-              <X size={12} />
+              <X size={isMobile ? 16 : 12} />
             </Button>
           )}
         </div>
@@ -194,7 +221,7 @@ export const CanvasModule = ({
           </div>
           
           <div className="text-center">
-            <div className="text-xs opacity-90 mb-1 font-medium">
+            <div className={`${isMobile ? 'text-sm' : 'text-xs'} opacity-90 mb-1 font-medium`}>
               {module.items.length}/{module.capacity}
             </div>
             <div className="text-xs opacity-60">
@@ -210,17 +237,17 @@ export const CanvasModule = ({
               {module.items.slice(0, 3).map((item, index) => (
                 <div
                   key={item.id}
-                  className="w-3 h-3 bg-white/30 rounded-sm flex items-center justify-center border border-white/20"
+                  className={`${isMobile ? 'w-4 h-4' : 'w-3 h-3'} bg-white/30 rounded-sm flex items-center justify-center border border-white/20`}
                   title={item.name}
                 >
-                  <span className="text-xs opacity-90 font-bold">
+                  <span className={`${isMobile ? 'text-xs' : 'text-xs'} opacity-90 font-bold`}>
                     {item.type.charAt(0).toUpperCase()}
                   </span>
                 </div>
               ))}
               {module.items.length > 3 && (
-                <div className="w-3 h-3 bg-white/30 rounded-sm flex items-center justify-center border border-white/20">
-                  <span className="text-xs opacity-90 font-bold">
+                <div className={`${isMobile ? 'w-4 h-4' : 'w-3 h-3'} bg-white/30 rounded-sm flex items-center justify-center border border-white/20`}>
+                  <span className={`${isMobile ? 'text-xs' : 'text-xs'} opacity-90 font-bold`}>
                     +{module.items.length - 3}
                   </span>
                 </div>
@@ -236,6 +263,11 @@ export const CanvasModule = ({
               <RotateCcw size={8} className="text-white" />
             </div>
           </div>
+        )}
+
+        {/* Drag indicator for mobile */}
+        {isDragging && isMobile && (
+          <div className="absolute inset-0 bg-blue-500/20 rounded-lg pointer-events-none animate-pulse" />
         )}
       </div>
     </Rnd>
