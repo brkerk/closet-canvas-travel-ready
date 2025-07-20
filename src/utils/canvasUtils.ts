@@ -67,55 +67,46 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Snap only to module edges, no grid snapping - free-form placement like IKEA planner
-export const snapToModulesAndGrid = (
+export const snapToModules = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
   snapDistance: number = 15
 ): CanvasPosition => {
-  let x = position.x;  // no grid snapping
+  let x = position.x;
   let y = position.y;
 
-  let bestX = x;
-  let bestY = y;
-  let minDeltaX = snapDistance + 1;
-  let minDeltaY = snapDistance + 1;
+  // en yakın adayları tutacak
+  let bestX = x, bestY = y;
+  let minDX = snapDistance + 1, minDY = snapDistance + 1;
 
   modules.forEach(mod => {
-    const left = mod.position.x;
-    const right = left + mod.size.width;
-    const top = mod.position.y;
+    const left   = mod.position.x;
+    const right  = left + mod.size.width;
+    const top    = mod.position.y;
     const bottom = top + mod.size.height;
 
-    // only snap to module edges
-    [
-      [right, Math.abs(x - right)],
-      [left - size.width, Math.abs(x + size.width - left)]
-    ].forEach(([cand, delta]) => {
-      if (delta < minDeltaX) {
-        minDeltaX = delta;
-        bestX = cand as number;
-      }
-    });
+    // X ekseninde: sol kenarımız -> mod.right, sağ kenarımız -> mod.left
+    [[ right, Math.abs(x - right) ],
+     [ left - size.width, Math.abs(x + size.width - left) ]]
+      .forEach(([cand, delta]) => {
+        if (delta < minDX) { minDX = delta; bestX = cand as number; }
+      });
 
-    [
-      [bottom, Math.abs(y - bottom)],
-      [top - size.height, Math.abs(y + size.height - top)]
-    ].forEach(([cand, delta]) => {
-      if (delta < minDeltaY) {
-        minDeltaY = delta;
-        bestY = cand as number;
-      }
-    });
+    // Y ekseninde: üst kenarımız -> mod.bottom, alt kenarımız -> mod.top
+    [[ bottom, Math.abs(y - bottom) ],
+     [ top - size.height, Math.abs(y + size.height - top) ]]
+      .forEach(([cand, delta]) => {
+        if (delta < minDY) { minDY = delta; bestY = cand as number; }
+      });
   });
 
-  // if edge proximity is sufficient, snap; otherwise keep mouse position
-  x = minDeltaX <= snapDistance ? bestX : x;
-  y = minDeltaY <= snapDistance ? bestY : y;
+  // Eğer kenara kadar yakınsak snap et, değilse özgür kal
+  x = minDX <= snapDistance ? bestX : x;
+  y = minDY <= snapDistance ? bestY : y;
 
-  // canvas boundaries
-  x = Math.max(0, Math.min(x, CANVAS_CONFIG.width - size.width));
+  // Canvas dışına çıkmasın
+  x = Math.max(0, Math.min(x, CANVAS_CONFIG.width  - size.width));
   y = Math.max(0, Math.min(y, CANVAS_CONFIG.height - size.height));
 
   return { x, y };

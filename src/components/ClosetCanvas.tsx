@@ -7,7 +7,7 @@ import {
   CanvasSize, 
   CANVAS_CONFIG, 
   snapToGrid, 
-  snapToModulesAndGrid,
+  snapToModules,
   isPositionValid 
 } from "@/utils/canvasUtils";
 
@@ -96,7 +96,7 @@ export const ClosetCanvas = ({
       };
       
       // Free-form placement with edge snapping only
-      const snappedPosition = snapToModulesAndGrid(
+      const snappedPosition = snapToModules(
         rawPosition, 
         module.size, 
         modules.filter(m => m.id !== dragState.moduleId), 
