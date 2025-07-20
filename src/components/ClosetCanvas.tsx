@@ -124,10 +124,8 @@ export const ClosetCanvas = ({
     setDragState(null);
   }, []);
 
-  // Blueprint-style background without grid - free-form placement
-  const blueprintBackground = `
-    linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)
-  `;
+  // Clean background without grid - free-form placement
+  const canvasBackground = '#f5f5f5';
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-200">
@@ -145,7 +143,8 @@ export const ClosetCanvas = ({
           width: '100%',
           maxWidth: CANVAS_CONFIG.width,
           height: Math.min(CANVAS_CONFIG.height, window.innerHeight * 0.6),
-          background: blueprintBackground
+          backgroundColor: canvasBackground,
+          backgroundImage: 'none'
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
