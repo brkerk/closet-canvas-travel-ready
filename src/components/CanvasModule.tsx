@@ -29,10 +29,8 @@ export const CanvasModule = ({
   const isMobile = useIsMobile();
 
   const handleDrag = (e: any, d: { x: number; y: number }) => {
-    // Real-time position update for smoother mobile experience
-    if (isMobile) {
-      onUpdatePosition({ x: d.x, y: d.y });
-    }
+    // Don't update position during drag to prevent jumping
+    // Only update on drag stop for stable mobile experience
   };
 
   const handleDragStop = (e: any, d: { x: number; y: number }) => {
