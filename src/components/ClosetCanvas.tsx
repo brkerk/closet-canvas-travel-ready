@@ -95,12 +95,12 @@ export const ClosetCanvas = ({
         y: currentPos.y - dragState.offset.y
       };
       
-      // Always try smart snapping first for better alignment
+      // Free-form placement with edge snapping only
       const snappedPosition = snapToModulesAndGrid(
         rawPosition, 
         module.size, 
         modules.filter(m => m.id !== dragState.moduleId), 
-        25  // Increased snap distance for better alignment
+        15  // Edge snap distance
       );
 
       const otherModules = modules.filter(m => m.id !== dragState.moduleId);
@@ -109,8 +109,8 @@ export const ClosetCanvas = ({
       }
     } else if (dragState.mode === 'resize') {
       const newSize = {
-        width: Math.max(60, snapToGrid(currentPos.x - module.position.x)),
-        height: Math.max(60, snapToGrid(currentPos.y - module.position.y))
+        width: Math.max(60, currentPos.x - module.position.x),
+        height: Math.max(60, currentPos.y - module.position.y)
       };
 
       const otherModules = modules.filter(m => m.id !== dragState.moduleId);
@@ -124,10 +124,8 @@ export const ClosetCanvas = ({
     setDragState(null);
   }, []);
 
-  // Blueprint-style background with architectural grid
+  // Blueprint-style background without grid - free-form placement
   const blueprintBackground = `
-    linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px),
     linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)
   `;
 
@@ -147,9 +145,7 @@ export const ClosetCanvas = ({
           width: '100%',
           maxWidth: CANVAS_CONFIG.width,
           height: Math.min(CANVAS_CONFIG.height, window.innerHeight * 0.6),
-          background: blueprintBackground,
-          backgroundSize: '20px 20px, 20px 20px, 100% 100%',
-          backgroundPosition: '0 0, 0 0, 0 0'
+          background: blueprintBackground
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

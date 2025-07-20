@@ -67,19 +67,18 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Snap to grid and find closest module edges independently for each axis
+// Snap only to module edges, no grid snapping - free-form placement like IKEA planner
 export const snapToModulesAndGrid = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
   snapDistance: number = 15
 ): CanvasPosition => {
-  const { gridSize, width: canvasW, height: canvasH } = CANVAS_CONFIG;
-  const origX = snapToGrid(position.x, gridSize);
-  const origY = snapToGrid(position.y, gridSize);
+  let x = position.x;  // no grid snapping
+  let y = position.y;
 
-  let bestX = origX;
-  let bestY = origY;
+  let bestX = x;
+  let bestY = y;
   let minDeltaX = snapDistance + 1;
   let minDeltaY = snapDistance + 1;
 
@@ -89,38 +88,37 @@ export const snapToModulesAndGrid = (
     const top = mod.position.y;
     const bottom = top + mod.size.height;
 
-    // x-axis candidates: our left edge to mod.right, our right to mod.left
+    // only snap to module edges
     [
-      { candidate: right, delta: Math.abs(origX - right) },
-      { candidate: left - size.width, delta: Math.abs(origX - (left - size.width)) }
-    ].forEach(({ candidate, delta }) => {
+      [right, Math.abs(x - right)],
+      [left - size.width, Math.abs(x + size.width - left)]
+    ].forEach(([cand, delta]) => {
       if (delta < minDeltaX) {
         minDeltaX = delta;
-        bestX = candidate;
+        bestX = cand as number;
       }
     });
 
-    // y-axis candidates: our top to mod.bottom, our bottom to mod.top
     [
-      { candidate: bottom, delta: Math.abs(origY - bottom) },
-      { candidate: top - size.height, delta: Math.abs(origY - (top - size.height)) }
-    ].forEach(({ candidate, delta }) => {
+      [bottom, Math.abs(y - bottom)],
+      [top - size.height, Math.abs(y + size.height - top)]
+    ].forEach(([cand, delta]) => {
       if (delta < minDeltaY) {
         minDeltaY = delta;
-        bestY = candidate;
+        bestY = cand as number;
       }
     });
   });
 
-  // If closest edge is within snapDistance, use it; otherwise keep grid snap
-  const finalX = minDeltaX <= snapDistance ? bestX : origX;
-  const finalY = minDeltaY <= snapDistance ? bestY : origY;
+  // if edge proximity is sufficient, snap; otherwise keep mouse position
+  x = minDeltaX <= snapDistance ? bestX : x;
+  y = minDeltaY <= snapDistance ? bestY : y;
 
-  // Finally ensure canvas boundaries
-  return {
-    x: Math.max(0, Math.min(finalX, canvasW - size.width)),
-    y: Math.max(0, Math.min(finalY, canvasH - size.height))
-  };
+  // canvas boundaries
+  x = Math.max(0, Math.min(x, CANVAS_CONFIG.width - size.width));
+  y = Math.max(0, Math.min(y, CANVAS_CONFIG.height - size.height));
+
+  return { x, y };
 };
 
 export const isPositionValid = (
