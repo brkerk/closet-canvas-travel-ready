@@ -1,14 +1,11 @@
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { CanvasModule as CanvasModuleComponent } from "./CanvasModule";
-import { 
+import {
   CanvasModule, 
   CanvasPosition, 
   CanvasSize, 
-  CANVAS_CONFIG, 
-  snapToGrid, 
-  snapToModules,
-  isPositionValid 
+  CANVAS_CONFIG
 } from "@/utils/canvasUtils";
 
 interface ClosetCanvasProps {
@@ -33,12 +30,6 @@ export const ClosetCanvas = ({
   autoAssignments = [],
 }: ClosetCanvasProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [dragState, setDragState] = useState<{
-    moduleId: string;
-    startPos: CanvasPosition;
-    offset: CanvasPosition;
-    mode: 'move' | 'resize';
-  } | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Deselect when clicking on empty canvas
@@ -46,83 +37,6 @@ export const ClosetCanvas = ({
       onModuleSelect(null);
     }
   }, [onModuleSelect]);
-
-  const handleModuleDragStart = useCallback((moduleId: string, mode: 'move' | 'resize') => (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const module = modules.find(m => m.id === moduleId);
-    if (!module) return;
-
-    onModuleSelect(moduleId);
-    
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const startPos = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-
-    setDragState({
-      moduleId,
-      startPos,
-      offset: {
-        x: startPos.x - module.position.x,
-        y: startPos.y - module.position.y
-      },
-      mode
-    });
-  }, [modules, onModuleSelect]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!dragState) return;
-
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const currentPos = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-
-    const module = modules.find(m => m.id === dragState.moduleId);
-    if (!module) return;
-
-    if (dragState.mode === 'move') {
-      const rawPosition = {
-        x: currentPos.x - dragState.offset.x,
-        y: currentPos.y - dragState.offset.y
-      };
-      
-      // Free-form placement with edge snapping only
-      const snappedPosition = snapToModules(
-        rawPosition, 
-        module.size, 
-        modules.filter(m => m.id !== dragState.moduleId), 
-        15  // Edge snap distance
-      );
-
-      const otherModules = modules.filter(m => m.id !== dragState.moduleId);
-      if (isPositionValid(snappedPosition, module.size, otherModules)) {
-        onModuleMove(dragState.moduleId, snappedPosition);
-      }
-    } else if (dragState.mode === 'resize') {
-      const newSize = {
-        width: Math.max(60, currentPos.x - module.position.x),
-        height: Math.max(60, currentPos.y - module.position.y)
-      };
-
-      const otherModules = modules.filter(m => m.id !== dragState.moduleId);
-      if (isPositionValid(module.position, newSize, otherModules)) {
-        onModuleResize(dragState.moduleId, newSize);
-      }
-    }
-  }, [dragState, modules, onModuleMove, onModuleResize]);
-
-  const handleMouseUp = useCallback(() => {
-    setDragState(null);
-  }, []);
 
   // Clean background without grid - free-form placement
   const canvasBackground = '#f5f5f5';
@@ -147,9 +61,6 @@ export const ClosetCanvas = ({
           backgroundImage: 'none'
         }}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       >
         {/* Floor and Wall Lines */}
         <svg 
@@ -162,7 +73,7 @@ export const ClosetCanvas = ({
             y1={CANVAS_CONFIG.height - 20} 
             x2={CANVAS_CONFIG.width} 
             y2={CANVAS_CONFIG.height - 20}
-            stroke="rgba(255,255,255,0.4)" 
+            stroke="rgba(0,0,0,0.3)" 
             strokeWidth="2"
           />
           {/* Left wall */}
@@ -171,7 +82,7 @@ export const ClosetCanvas = ({
             y1="0" 
             x2="20" 
             y2={CANVAS_CONFIG.height - 20}
-            stroke="rgba(255,255,255,0.4)" 
+            stroke="rgba(0,0,0,0.3)" 
             strokeWidth="2"
           />
           {/* Right wall */}
@@ -180,7 +91,7 @@ export const ClosetCanvas = ({
             y1="0" 
             x2={CANVAS_CONFIG.width - 20} 
             y2={CANVAS_CONFIG.height - 20}
-            stroke="rgba(255,255,255,0.4)" 
+            stroke="rgba(0,0,0,0.3)" 
             strokeWidth="2"
           />
           {/* Ceiling line */}
@@ -189,7 +100,7 @@ export const ClosetCanvas = ({
             y1="20" 
             x2={CANVAS_CONFIG.width - 20} 
             y2="20"
-            stroke="rgba(255,255,255,0.3)" 
+            stroke="rgba(0,0,0,0.2)" 
             strokeWidth="1"
           />
         </svg>
@@ -202,15 +113,16 @@ export const ClosetCanvas = ({
             isSelected={selectedModule === module.id}
             onSelect={() => onModuleSelect(module.id)}
             onRemove={() => onModuleRemove(module.id)}
-            onStartDrag={handleModuleDragStart(module.id, 'move')}
-            onStartResize={handleModuleDragStart(module.id, 'resize')}
+            onUpdatePosition={(position) => onModuleMove(module.id, position)}
+            onUpdateSize={(size) => onModuleResize(module.id, size)}
+            allModules={modules}
           />
         ))}
 
         {/* Empty state */}
         {modules.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="text-center text-white/70">
+            <div className="text-center text-gray-500">
               <div className="text-4xl mb-4">📐</div>
               <p className="text-lg font-medium mb-2">Start Your Closet Design</p>
               <p className="text-sm">Add modules to create your 2D closet elevation</p>
