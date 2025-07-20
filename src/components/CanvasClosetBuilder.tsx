@@ -16,9 +16,11 @@ import { ClosetModuleData } from "./ClosetModule";
 import { useGarmentStore } from "@/hooks/useGarmentStore";
 import { GarmentAutoAssignmentService, AutoAssignmentResult } from "@/services/garmentAutoAssignment";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const CanvasClosetBuilder = () => {
   const { garments } = useGarmentStore();
+  const isMobile = useIsMobile();
   const [autoAssignments, setAutoAssignments] = useState<AutoAssignmentResult[]>([]);
   const [showAssignmentHighlights, setShowAssignmentHighlights] = useState(true);
 
@@ -313,6 +315,23 @@ export const CanvasClosetBuilder = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Mobile Instructions */}
+      {isMobile && (
+        <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
+          <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4" />
+            Digital Closet
+          </h3>
+          <div className="space-y-2 text-sm text-blue-700">
+            <div>• Drag modules to reposition them</div>
+            <div>• Resize modules by dragging corners</div>
+            <div>• Green checkmarks show auto-assigned items</div>
+            <div>• Manually adjust assignments as needed</div>
+            <div>• Save your design when you're happy with it</div>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Header */}
       <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-4 sm:p-6 border border-pink-100">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
