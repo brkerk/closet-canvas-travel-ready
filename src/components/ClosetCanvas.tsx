@@ -211,14 +211,9 @@ export const ClosetCanvas = ({
       {/* Canvas Wrapper with Scroll */}
       <div
         ref={wrapperRef}
-        className={`
-          relative border-2 border-gray-300 rounded-lg w-full
-          ${isMobile ? 'overflow-auto touch-pan-x touch-pan-y' : 'overflow-hidden'}
-          ${isMobile ? 'h-[60vh] max-h-[400px]' : 'h-auto'}
-        `}
+        className="w-full h-screen overflow-auto relative pointer-events-auto touch-action-pan border-2 border-gray-300 rounded-lg min-h-[400px]"
         style={{
           WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
-          touchAction: isMobile ? 'pan-x pan-y pinch-zoom' : 'none',
         }}
       >
         <div

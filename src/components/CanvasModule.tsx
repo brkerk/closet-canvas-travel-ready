@@ -3,6 +3,7 @@ import { Rnd } from "react-rnd";
 import { X, Move, RotateCcw } from "lucide-react";
 import { type CanvasModule as CanvasModuleData, MODULE_STYLES, snapToModules } from "@/utils/canvasUtils";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CanvasModuleProps {
   module: CanvasModuleData;
@@ -25,6 +26,14 @@ export const CanvasModule = ({
 }: CanvasModuleProps) => {
   const moduleStyle = MODULE_STYLES[module.type];
   const otherModules = allModules.filter(m => m.id !== module.id);
+  const isMobile = useIsMobile();
+
+  const handleDrag = (e: any, d: { x: number; y: number }) => {
+    // Real-time position update for smoother mobile experience
+    if (isMobile) {
+      onUpdatePosition({ x: d.x, y: d.y });
+    }
+  };
 
   const handleDragStop = (e: any, d: { x: number; y: number }) => {
     const snappedPosition = snapToModules(
@@ -121,6 +130,7 @@ export const CanvasModule = ({
     <Rnd
       size={{ width: module.size.width, height: module.size.height }}
       position={{ x: module.position.x, y: module.position.y }}
+      onDrag={handleDrag}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       dragGrid={undefined} // grid'i tamamen kapat
@@ -128,6 +138,8 @@ export const CanvasModule = ({
       bounds="parent"
       minWidth={moduleStyle.minSize.width}
       minHeight={moduleStyle.minSize.height}
+      enableUserSelectHack={false}
+      dragHandleClassName={isMobile ? "drag-handle-mobile" : "drag-handle"}
       enableResizing={{
         top: false,
         right: true,
@@ -142,6 +154,7 @@ export const CanvasModule = ({
         border: isSelected ? "2px solid #3B82F6" : "1px solid rgba(255,255,255,0.3)",
         borderRadius: "4px",
         zIndex: isSelected ? 10 : 1,
+        pointerEvents: 'auto',
       }}
       onClick={onSelect}
     >
@@ -153,7 +166,7 @@ export const CanvasModule = ({
         {renderPattern()}
         
         {/* Header */}
-        <div className="relative z-10 p-2 flex items-center justify-between bg-black/20">
+        <div className={`relative z-10 p-2 flex items-center justify-between bg-black/20 ${isMobile ? 'drag-handle-mobile min-h-[44px]' : 'drag-handle'}`}>
           <div className="flex items-center gap-2">
             <Move size={14} className="opacity-60" />
             <span className="text-xs font-medium capitalize">
