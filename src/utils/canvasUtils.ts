@@ -67,18 +67,49 @@ export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridS
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Free positioning - minimal constraints for maximum flexibility
+// Snap to grid and nearby module edges
 export const snapToModulesAndGrid = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
   snapDistance: number = 15
 ): CanvasPosition => {
-  // Return position as-is for completely free movement
-  // Only ensure it stays within canvas boundaries
+  // First snap to grid
+  let x = snapToGrid(position.x);
+  let y = snapToGrid(position.y);
+
+  // Then snap to nearby module edges
+  for (const module of modules) {
+    const moduleLeft = module.position.x;
+    const moduleRight = module.position.x + module.size.width;
+    const moduleTop = module.position.y;
+    const moduleBottom = module.position.y + module.size.height;
+
+    // Snap to right edge of existing module (place new module to the right)
+    if (Math.abs(x - moduleRight) < snapDistance) {
+      x = moduleRight;
+    }
+    
+    // Snap to left edge of existing module (place new module to the left)
+    if (Math.abs(x + size.width - moduleLeft) < snapDistance) {
+      x = moduleLeft - size.width;
+    }
+    
+    // Snap to bottom edge of existing module (place new module below)
+    if (Math.abs(y - moduleBottom) < snapDistance) {
+      y = moduleBottom;
+    }
+    
+    // Snap to top edge of existing module (place new module above)
+    if (Math.abs(y + size.height - moduleTop) < snapDistance) {
+      y = moduleTop - size.height;
+    }
+  }
+
+  // Ensure it stays within canvas boundaries
   return {
-    x: Math.max(0, Math.min(position.x, CANVAS_CONFIG.width - size.width)),
-    y: Math.max(0, Math.min(position.y, CANVAS_CONFIG.height - size.height))
+    x: Math.max(0, Math.min(x, CANVAS_CONFIG.width - size.width)),
+    y: Math.max(0, Math.min(y, CANVAS_CONFIG.height - size.height))
   };
 };
 
