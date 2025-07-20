@@ -1,6 +1,7 @@
 
 import { Plus, Info } from "lucide-react";
 import { ClosetModuleData } from "./ClosetModule";
+import { ModulePreview } from "./ModuleIcons";
 
 interface ModuleLibraryProps {
   onAddModule: (moduleType: ClosetModuleData["type"]) => void;
@@ -14,12 +15,11 @@ export const ModuleLibrary = ({ onAddModule }: ModuleLibraryProps) => {
         {
           type: "hanging-rod" as const,
           name: "Hanging Rod",
-          icon: "👔",
           description: "Perfect for shirts, dresses, and jackets",
-          width: 2,
-          height: 3,
+          width: 1.5,
+          height: 2,
           capacity: 12,
-          color: "from-blue-400 to-blue-600",
+          gradient: "from-blue-400 to-blue-600",
           tip: "Best for wrinkle-prone items"
         },
       ]
@@ -30,23 +30,21 @@ export const ModuleLibrary = ({ onAddModule }: ModuleLibraryProps) => {
         {
           type: "shelves" as const,
           name: "Shelves",
-          icon: "📚",
           description: "Great for folded clothes and accessories",
-          width: 2,
-          height: 2,
+          width: 1.5,
+          height: 1.5,
           capacity: 8,
-          color: "from-green-400 to-green-600",
+          gradient: "from-emerald-400 to-emerald-600",
           tip: "Ideal for t-shirts and sweaters"
         },
         {
           type: "drawers" as const,
           name: "Drawers",
-          icon: "🗃️",
           description: "Organize underwear, socks, and small items",
-          width: 2,
+          width: 1.5,
           height: 1,
           capacity: 20,
-          color: "from-yellow-400 to-yellow-600",
+          gradient: "from-amber-400 to-amber-600",
           tip: "Perfect for delicate items"
         },
       ]
@@ -57,23 +55,21 @@ export const ModuleLibrary = ({ onAddModule }: ModuleLibraryProps) => {
         {
           type: "shoe-rack" as const,
           name: "Shoe Rack",
-          icon: "👟",
           description: "Dedicated space for shoes and boots",
           width: 1,
-          height: 2,
+          height: 1.5,
           capacity: 6,
-          color: "from-red-400 to-red-600",
+          gradient: "from-red-400 to-red-600",
           tip: "Keeps shoes organized and aired"
         },
         {
           type: "accessory-hooks" as const,
           name: "Hooks",
-          icon: "👜",
           description: "Hang belts, ties, bags, and scarves",
           width: 1,
           height: 1,
           capacity: 5,
-          color: "from-purple-400 to-purple-600",
+          gradient: "from-purple-400 to-purple-600",
           tip: "Easy access to accessories"
         },
       ]
@@ -98,15 +94,15 @@ export const ModuleLibrary = ({ onAddModule }: ModuleLibraryProps) => {
                 <button
                   key={moduleType.type}
                   onClick={() => onAddModule(moduleType.type)}
-                  className="p-4 border border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 text-left group relative overflow-hidden"
+                  className="p-4 border border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 text-left group relative overflow-hidden hover:shadow-lg"
                 >
                   {/* Background gradient preview */}
-                  <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${moduleType.color} opacity-10 rounded-full -mr-8 -mt-8 group-hover:opacity-20 transition-opacity`} />
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${moduleType.gradient} opacity-5 rounded-full -mr-10 -mt-10 group-hover:opacity-10 transition-opacity`} />
                   
                   <div className="relative z-10">
-                    <div className="flex items-start gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${moduleType.color} flex items-center justify-center text-white shadow-sm`}>
-                        <span className="text-lg">{moduleType.icon}</span>
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${moduleType.gradient} flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-shadow`}>
+                        <ModulePreview type={moduleType.type} className="w-8 h-8" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -115,14 +111,14 @@ export const ModuleLibrary = ({ onAddModule }: ModuleLibraryProps) => {
                         </div>
                         <p className="text-xs text-gray-600 mb-2">{moduleType.description}</p>
                         <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span>{moduleType.width}×{moduleType.height} grid</span>
+                          <span>{moduleType.width}×{moduleType.height} units</span>
                           <span>•</span>
                           <span>{moduleType.capacity} items</span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-blue-50 px-3 py-2 rounded-lg">
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2 rounded-lg border border-blue-100/50">
                       <p className="text-xs text-blue-800 font-medium">💡 {moduleType.tip}</p>
                     </div>
                   </div>

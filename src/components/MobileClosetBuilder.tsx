@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ModuleLibrary } from "./ModuleLibrary";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { useGarmentStore } from "@/hooks/useGarmentStore";
 import { GarmentAutoAssignmentService, AutoAssignmentResult } from "@/services/garmentAutoAssignment";
 import { toast } from "sonner";
 import { CanvasModule as CanvasModuleComponent } from "./CanvasModule";
+import { ModulePreview } from "./ModuleIcons";
 
 export const MobileClosetBuilder = () => {
   const { garments } = useGarmentStore();
@@ -39,8 +41,8 @@ export const MobileClosetBuilder = () => {
     const newModule: CanvasModule = {
       id: `module-${Date.now()}`,
       type: moduleType,
-      position: { x: 20 + (modules.length % 2) * 160, y: 20 + Math.floor(modules.length / 2) * 120 },
-      size: { width: 140, height: 100 }, // Fixed size for mobile
+      position: { x: 20 + (modules.length % 2) * 120, y: 20 + Math.floor(modules.length / 2) * 100 }, // Adjusted spacing
+      size: { width: moduleStyle.minSize.width + 20, height: moduleStyle.minSize.height + 20 }, // Slightly larger than minimum
       capacity: getModuleCapacity(moduleType),
       items: [],
     };
@@ -99,7 +101,7 @@ export const MobileClosetBuilder = () => {
         <h1 className="text-lg font-bold text-gray-800 mb-2">Digital Closet</h1>
         
         {/* Quick Instructions */}
-        <div className="bg-blue-50 rounded-lg p-3 mb-3">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-3 border border-blue-100">
           <div className="space-y-1 text-sm text-blue-700">
             <div>• Drag modules to reposition them</div>
             <div>• Resize modules by dragging corners</div>
@@ -153,34 +155,35 @@ export const MobileClosetBuilder = () => {
         {/* Mobile Module Library - Horizontal Scroll */}
         <div className="p-3 border-b border-gray-100">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Add Storage Modules</h4>
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-3 overflow-x-auto pb-2">
             {[
-              { type: "hanging-rod", icon: "👔", name: "Hanging Rod", color: "bg-blue-100" },
-              { type: "shelves", icon: "📚", name: "Shelves", color: "bg-green-100" },
-              { type: "drawers", icon: "🗃️", name: "Drawers", color: "bg-orange-100" },
-              { type: "shoe-rack", icon: "👟", name: "Shoe Rack", color: "bg-red-100" },
-              { type: "accessory-hooks", icon: "👜", name: "Hooks", color: "bg-purple-100" },
-            ].map(({ type, icon, name, color }) => (
+              { type: "hanging-rod", name: "Hanging Rod", gradient: "from-blue-400 to-blue-600" },
+              { type: "shelves", name: "Shelves", gradient: "from-emerald-400 to-emerald-600" },
+              { type: "drawers", name: "Drawers", gradient: "from-amber-400 to-amber-600" },
+              { type: "shoe-rack", name: "Shoe Rack", gradient: "from-red-400 to-red-600" },
+              { type: "accessory-hooks", name: "Hooks", gradient: "from-purple-400 to-purple-600" },
+            ].map(({ type, name, gradient }) => (
               <button
                 key={type}
                 onClick={() => addModule(type as ClosetModuleData["type"])}
-                className={`flex-shrink-0 ${color} rounded-lg p-3 min-w-[80px] text-center border border-gray-200 hover:shadow-md transition-all`}
+                className={`flex-shrink-0 bg-gradient-to-br ${gradient} rounded-xl p-3 min-w-[80px] text-center border border-white/20 hover:shadow-lg transition-all duration-200 text-white group`}
               >
-                <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-xs font-medium text-gray-700">{name}</div>
+                <div className="mb-2 flex justify-center">
+                  <ModulePreview type={type as ClosetModuleData["type"]} className="w-8 h-8 opacity-90 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="text-xs font-medium">{name}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Simple Canvas */}
-        <div className="flex-1 relative bg-gray-50 overflow-auto">
+        <div className="flex-1 relative bg-gradient-to-b from-gray-50 to-gray-100 overflow-auto">
           <div 
             className="relative"
             style={{ 
               width: '100%',
               minHeight: '400px',
-              background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)'
             }}
           >
             {/* Simple floor line */}
@@ -190,8 +193,9 @@ export const MobileClosetBuilder = () => {
                 y1="380" 
                 x2="100%" 
                 y2="380"
-                stroke="rgba(0,0,0,0.2)" 
+                stroke="rgba(0,0,0,0.15)" 
                 strokeWidth="2"
+                strokeDasharray="4,4"
               />
             </svg>
 
@@ -213,9 +217,9 @@ export const MobileClosetBuilder = () => {
             {modules.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-gray-500 p-4">
-                  <div className="text-3xl mb-3">📐</div>
+                  <div className="text-4xl mb-3">🏠</div>
                   <p className="text-lg font-medium mb-2">Start Your Closet Design</p>
-                  <p className="text-sm">Tap modules above to create your layout</p>
+                  <p className="text-sm">Tap modules above to create your perfect layout</p>
                 </div>
               </div>
             )}
@@ -225,16 +229,17 @@ export const MobileClosetBuilder = () => {
 
       {/* Auto-Assignment Status */}
       {autoAssignments.length > 0 && (
-        <div className="bg-green-50 border-t border-green-200 p-3">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-t border-green-200 p-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-green-800 font-medium">
+            <span className="text-green-800 font-medium flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               {autoAssignments.length} garments auto-assigned
             </span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setAutoAssignments([])}
-              className="text-green-700 border-green-300"
+              className="text-green-700 border-green-300 hover:bg-green-100"
             >
               Clear
             </Button>

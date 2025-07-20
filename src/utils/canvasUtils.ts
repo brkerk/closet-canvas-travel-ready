@@ -38,28 +38,38 @@ export const CANVAS_CONFIG = {
 export const MODULE_STYLES = {
   "hanging-rod": {
     color: "#3B82F6",
+    gradient: "from-blue-400 via-blue-500 to-blue-600",
     pattern: "vertical-lines",
-    minSize: { width: 120, height: 180 }
+    minSize: { width: 90, height: 120 }, // Reduced from 120x180
+    shadow: "shadow-blue-200/50"
   },
   "shelves": {
     color: "#10B981",
+    gradient: "from-emerald-400 via-green-500 to-emerald-600",
     pattern: "horizontal-lines",
-    minSize: { width: 120, height: 120 }
+    minSize: { width: 90, height: 80 }, // Reduced from 120x120
+    shadow: "shadow-emerald-200/50"
   },
   "drawers": {
     color: "#F59E0B",
+    gradient: "from-amber-400 via-orange-500 to-amber-600",
     pattern: "grid",
-    minSize: { width: 120, height: 80 }
+    minSize: { width: 90, height: 60 }, // Reduced from 120x80
+    shadow: "shadow-amber-200/50"
   },
   "shoe-rack": {
     color: "#EF4444",
+    gradient: "from-red-400 via-red-500 to-red-600",
     pattern: "dots",
-    minSize: { width: 80, height: 120 }
+    minSize: { width: 60, height: 90 }, // Reduced from 80x120
+    shadow: "shadow-red-200/50"
   },
   "accessory-hooks": {
     color: "#8B5CF6",
+    gradient: "from-purple-400 via-violet-500 to-purple-600",
     pattern: "diagonal",
-    minSize: { width: 60, height: 60 }
+    minSize: { width: 50, height: 50 }, // Reduced from 60x60
+    shadow: "shadow-purple-200/50"
   }
 } as const;
 
