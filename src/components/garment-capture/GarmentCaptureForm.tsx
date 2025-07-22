@@ -82,6 +82,7 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
       brand: "", // Will be filled in edit details
       tags: analysis?.suggestedTags || [],
       isFavorite: false,
+      imageUrl: capturedImage.url, // Include the captured image URL
     });
 
     toast({
@@ -126,6 +127,7 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
       brand: "",
       tags: analysis?.suggestedTags || [],
       isFavorite: false,
+      imageUrl: capturedImage.url, // Include the captured image URL
     });
 
     onEditDetails?.(newGarment.id);
