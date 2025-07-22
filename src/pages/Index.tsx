@@ -60,8 +60,8 @@ const Index = () => {
       <div className="bg-purple-50 shadow-sm px-4 py-3">
         <div className="flex items-center space-x-2">
           <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
-          <h1 className="text-lg font-semibold text-purple-800">Closety</h1>
-          <small className="text-gray-600 ml-8">Smart wardrobe management</small>
+          <h1 className="text-base font-normal text-purple-900">Closety</h1>
+          <small className="text-xs text-gray-600 ml-2">Smart wardrobe management</small>
           {isNative && (
             <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Native App" />
           )}
