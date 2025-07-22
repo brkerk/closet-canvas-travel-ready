@@ -86,7 +86,7 @@ export const EnhancedGarmentCapture = () => {
   const isSubmitDisabled = !image || !garmentData.name || !garmentData.color;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       {/* Fixed Header */}
       <div className="sticky top-0 z-10 bg-white border-b border-border px-4 py-3">
         <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
