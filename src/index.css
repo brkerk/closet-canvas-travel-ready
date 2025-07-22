@@ -111,3 +111,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .card {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--color-card);
+    margin-bottom: 16px;
+  }
+  
+  .section-title {
+    margin-bottom: 8px;
+  }
+}

@@ -134,91 +134,53 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-6 p-4">
-      <div className="text-center">
+    <div className="max-w-md mx-auto px-4">
+      <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-foreground mb-2">Add New Garment</h2>
         <p className="text-sm text-muted-foreground">Capture a photo and add essential details</p>
       </div>
 
-      {/* Photo Upload */}
-      <PhotoUploadCard
-        image={capturedImage}
-        onImageChange={setCapturedImage}
-        onAnalyze={handleImageAnalysis}
-        isAnalyzing={isAnalyzing}
-      />
+      {/* Photo Upload Card */}
+      <div className="card">
+        <PhotoUploadCard
+          image={capturedImage}
+          onImageChange={setCapturedImage}
+          onAnalyze={handleImageAnalysis}
+          isAnalyzing={isAnalyzing}
+        />
+      </div>
 
       {/* AI Analysis Panel */}
       {analysis && (
-        <AIAnalysisPanel
-          analysis={analysis}
-          onApply={handleApplyAISuggestions}
-        />
+        <div className="card">
+          <AIAnalysisPanel
+            analysis={analysis}
+            onApply={handleApplyAISuggestions}
+          />
+        </div>
       )}
 
       {/* Error Display */}
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+        <div className="card bg-destructive/10 border border-destructive/20">
           <p className="text-sm text-destructive">{error}</p>
         </div>
       )}
 
-      {/* Essential Fields Form */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name *</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g., Navy Blue Blazer"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-2 gap-3">
+      {/* Essential Fields Form Card */}
+      <div className="card">
+        <h3 className="section-title font-medium text-foreground">Essential Details</h3>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="type"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Tops">Tops</SelectItem>
-                      <SelectItem value="Bottoms">Bottoms</SelectItem>
-                      <SelectItem value="Outerwear">Outerwear</SelectItem>
-                      <SelectItem value="Dresses">Dresses</SelectItem>
-                      <SelectItem value="Shoes">Shoes</SelectItem>
-                      <SelectItem value="Accessories">Accessories</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color *</FormLabel>
+                  <FormLabel>Name *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g., Navy Blue"
+                      placeholder="e.g., Navy Blue Blazer"
                       {...field}
                     />
                   </FormControl>
@@ -226,29 +188,77 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
                 </FormItem>
               )}
             />
-          </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save to Closet
-            </Button>
-            
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleEditDetails}
-              className="flex-1"
-            >
-              <Edit3 className="w-4 h-4 mr-2" />
-              Add Details
-            </Button>
-          </div>
-        </form>
-      </Form>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Tops">Tops</SelectItem>
+                        <SelectItem value="Bottoms">Bottoms</SelectItem>
+                        <SelectItem value="Outerwear">Outerwear</SelectItem>
+                        <SelectItem value="Dresses">Dresses</SelectItem>
+                        <SelectItem value="Shoes">Shoes</SelectItem>
+                        <SelectItem value="Accessories">Accessories</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Color *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Navy Blue"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Button Group - Save primary, Add Details secondary */}
+            <div className="space-y-3 pt-4">
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save to Closet
+              </Button>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleEditDetails}
+                className="w-full text-sm"
+                size="sm"
+              >
+                <Edit3 className="w-4 h-4 mr-2" />
+                Add Details
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };
