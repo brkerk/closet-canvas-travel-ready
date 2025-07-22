@@ -167,11 +167,12 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
         </div>
       )}
 
-      {/* Essential Fields Form Card */}
+      {/* Streamlined Form Card - Essentials Only */}
       <div className="card">
         <h3 className="section-title font-medium text-foreground">Essential Details</h3>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name Field */}
             <FormField
               control={form.control}
               name="name"
@@ -181,6 +182,7 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
                   <FormControl>
                     <Input
                       placeholder="e.g., Navy Blue Blazer"
+                      required
                       {...field}
                     />
                   </FormControl>
@@ -189,49 +191,55 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+            {/* Type and Color in Row - 48% width each with 4% gap */}
+            <div style={{ display: 'flex', gap: '4%', marginTop: '12px' }}>
+              <div style={{ flex: '1' }}>
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} required>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="[Tops,Pants,...]" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Tops">Tops</SelectItem>
+                          <SelectItem value="Bottoms">Bottoms</SelectItem>
+                          <SelectItem value="Outerwear">Outerwear</SelectItem>
+                          <SelectItem value="Dresses">Dresses</SelectItem>
+                          <SelectItem value="Shoes">Shoes</SelectItem>
+                          <SelectItem value="Accessories">Accessories</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div style={{ flex: '1' }}>
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Color *</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
+                        <Input
+                          placeholder="e.g., Navy Blue"
+                          required
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Tops">Tops</SelectItem>
-                        <SelectItem value="Bottoms">Bottoms</SelectItem>
-                        <SelectItem value="Outerwear">Outerwear</SelectItem>
-                        <SelectItem value="Dresses">Dresses</SelectItem>
-                        <SelectItem value="Shoes">Shoes</SelectItem>
-                        <SelectItem value="Accessories">Accessories</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="color"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Color *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., Navy Blue"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             {/* Button Group - Save primary, Add Details secondary */}
