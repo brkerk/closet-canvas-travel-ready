@@ -42,7 +42,19 @@ export class ImageClassifierService {
       await this.initialize();
     }
 
-    return await this.imageClassifier(imageElement);
+    // Convert HTMLImageElement to canvas for proper input format
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      throw new Error('Could not get canvas context');
+    }
+
+    canvas.width = imageElement.naturalWidth || imageElement.width;
+    canvas.height = imageElement.naturalHeight || imageElement.height;
+    ctx.drawImage(imageElement, 0, 0);
+
+    return await this.imageClassifier(canvas);
   }
 }
 
