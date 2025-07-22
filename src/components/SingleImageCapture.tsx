@@ -76,13 +76,13 @@ export const SingleImageCapture = ({ onImageChange }: SingleImageCaptureProps) =
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       {image ? (
-        <div className="relative aspect-square max-w-xs mx-auto rounded-xl overflow-hidden border-2 border-gray-200">
+        <div className="relative">
           <img
             src={image.url}
             alt="Captured garment"
-            className="w-full h-full object-cover"
+            className="w-full h-48 object-cover rounded-lg"
           />
           
           {/* Remove button */}
@@ -96,32 +96,54 @@ export const SingleImageCapture = ({ onImageChange }: SingleImageCaptureProps) =
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div>
           {isNativeAvailable ? (
-            /* Native camera controls */
-            <div className="flex gap-3">
-              <Button
-                onClick={handleNativeCamera}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-6 rounded-xl"
+            /* Native camera controls - simplified for uploader area */
+            <div className="flex flex-col items-center justify-center" style={{ minHeight: '140px' }}>
+              <Camera size={48} style={{ color: 'hsl(var(--color-border))' }} />
+              <span 
+                style={{ 
+                  display: 'block', 
+                  marginTop: '8px', 
+                  color: 'hsl(var(--color-text-body))',
+                  textAlign: 'center'
+                }}
               >
-                <Camera className="w-6 h-6 mr-2" />
-                Take Photo
-              </Button>
-              <Button
-                onClick={handleNativeGallery}
-                variant="outline"
-                className="flex-1 py-6 rounded-xl border-2 border-dashed"
-              >
-                <ImageIcon className="w-6 h-6 mr-2" />
-                Gallery
-              </Button>
+                Tap to take photo
+              </span>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  onClick={handleNativeCamera}
+                  size="sm"
+                  style={{ background: 'hsl(var(--color-primary))' }}
+                >
+                  <Camera className="w-4 h-4 mr-1" />
+                  Camera
+                </Button>
+                <Button
+                  onClick={handleNativeGallery}
+                  variant="outline"
+                  size="sm"
+                >
+                  <ImageIcon className="w-4 h-4 mr-1" />
+                  Gallery
+                </Button>
+              </div>
             </div>
           ) : (
             /* Web fallback */
-            <label className="block aspect-square max-w-xs mx-auto border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-purple-400 transition-colors active:scale-95">
-              <Camera className="w-12 h-12 text-gray-400 mb-4" />
-              <span className="text-lg text-gray-600 mb-2">Capture Garment</span>
-              <span className="text-sm text-gray-500">Click to take photo</span>
+            <label className="flex flex-col items-center justify-center cursor-pointer" style={{ minHeight: '140px' }}>
+              <Camera size={48} style={{ color: 'hsl(var(--color-border))' }} />
+              <span 
+                style={{ 
+                  display: 'block', 
+                  marginTop: '8px', 
+                  color: 'hsl(var(--color-text-body))',
+                  textAlign: 'center'
+                }}
+              >
+                Tap to take photo
+              </span>
               <input
                 type="file"
                 accept="image/*"

@@ -25,24 +25,30 @@ export const PhotoUploadCard = ({
 }: PhotoUploadCardProps) => {
   return (
     <div className="w-full">
-      <div className="bg-card rounded-lg border border-purple-100 overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-50 to-purple-100 py-2 px-3">
-          <h3 className="font-medium text-card-foreground flex items-center gap-1.5 text-sm">
-            <Camera className="w-4 h-4 text-purple-500" />
-            Garment Photo
-          </h3>
+      <div className="card-header" style={{ background: 'hsl(var(--color-primary))', color: 'white', padding: '16px', borderRadius: '12px 12px 0 0' }}>
+        <div className="flex items-center gap-2">
+          <Camera className="w-4 h-4" />
+          Garment Photo
         </div>
-        
-        <div className="p-3">
-          <SingleImageCapture onImageChange={onImageChange} />
-          
-          {image && (
-            <div className="mt-3">
+      </div>
+      
+      <div className="bg-card border-x border-b rounded-b-lg">
+        <div className="p-4">
+          {image ? (
+            <div className="space-y-3">
+              <div className="relative">
+                <img 
+                  src={image.url} 
+                  alt="Captured garment" 
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+              </div>
               <Button
                 type="button"
                 onClick={onAnalyze}
                 disabled={isAnalyzing}
-                className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white transition-all"
+                className="w-full"
+                style={{ background: 'hsl(var(--color-primary))' }}
               >
                 {isAnalyzing ? (
                   <>
@@ -56,6 +62,18 @@ export const PhotoUploadCard = ({
                   </>
                 )}
               </Button>
+            </div>
+          ) : (
+            <div 
+              className="uploader flex flex-col items-center justify-center cursor-pointer"
+              style={{
+                minHeight: '180px',
+                border: '1px dashed hsl(var(--color-border))',
+                borderRadius: '8px',
+                marginTop: '8px'
+              }}
+            >
+              <SingleImageCapture onImageChange={onImageChange} />
             </div>
           )}
         </div>
