@@ -59,7 +59,7 @@ const Index = () => {
       <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">Digital Closet</h1>
+            <h1 className="text-xl font-bold text-gray-800">Closety</h1>
             <p className="text-sm text-gray-600">Smart wardrobe management</p>
           </div>
           {isNative && (
