@@ -85,10 +85,12 @@ export const EnhancedGarmentCapture = () => {
 
   const isSubmitDisabled = !image || !garmentData.name || !garmentData.color;
 
+  console.log("EnhancedGarmentCapture rendering");
+  
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen bg-background">
       {/* Fixed Header */}
-      <div className="flex-shrink-0 bg-white border-b border-border px-4 py-3">
+      <div className="sticky top-0 z-10 bg-white border-b border-border px-4 py-3">
         <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
           <Wand2 className="w-5 h-5 text-purple-500" />
           Smart Garment Capture
@@ -96,60 +98,63 @@ export const EnhancedGarmentCapture = () => {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-3 pb-32">
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
-            {/* Photo Upload Section */}
-            <PhotoUploadCard 
-              image={image}
-              onImageChange={handleImageChange}
-              onAnalyze={handleAIAnalysis}
-              isAnalyzing={isAnalyzing}
-            />
+      <div className="p-3 pb-32">
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
+          <div style={{ border: '2px solid red', padding: '10px' }}>DEBUG: Form container - Scroll should work now</div>
+          {/* Photo Upload Section */}
+          <PhotoUploadCard 
+            image={image}
+            onImageChange={handleImageChange}
+            onAnalyze={handleAIAnalysis}
+            isAnalyzing={isAnalyzing}
+          />
+          
+          {/* AI Analysis Results */}
+          {analysis && (
+            <AIAnalysisPanel analysis={analysis} onApply={applyAIResults} />
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+              <p className="text-destructive text-xs flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <span><strong>Analysis Error:</strong> {error}</span>
+              </p>
+            </div>
+          )}
+
+          {/* Basic Information Section */}
+          <div className="w-full bg-white rounded-lg p-3 border border-border">
+            <div className="flex items-center gap-1.5 mb-3">
+              <Info className="w-4 h-4 text-muted-foreground" />
+              <h3 className="font-medium text-sm">Basic Information</h3>
+            </div>
             
-            {/* AI Analysis Results */}
-            {analysis && (
-              <AIAnalysisPanel analysis={analysis} onApply={applyAIResults} />
-            )}
-
-            {/* Error Display */}
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-                <p className="text-destructive text-xs flex items-start gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                  <span><strong>Analysis Error:</strong> {error}</span>
-                </p>
-              </div>
-            )}
-
-            {/* Basic Information Section */}
-            <div className="w-full bg-white rounded-lg p-3 border border-border">
-              <div className="flex items-center gap-1.5 mb-3">
-                <Info className="w-4 h-4 text-muted-foreground" />
-                <h3 className="font-medium text-sm">Basic Information</h3>
-              </div>
-              
-              <BasicInfoFields 
-                garmentData={garmentData} 
-                handleInputChange={handleInputChange} 
-              />
-            </div>
-
-            {/* Tags Section */}
-            <div className="w-full p-3">
-              <TagsInput 
-                tags={garmentData.tags} 
-                onChange={(value) => handleInputChange("tags", value)} 
-              />
-            </div>
-
-            {/* Enhanced Details Section */}
-            <EnhancedDetailsFields 
+            <BasicInfoFields 
               garmentData={garmentData} 
               handleInputChange={handleInputChange} 
             />
-          </form>
-        </div>
+          </div>
+
+          {/* Tags Section */}
+          <div className="w-full p-3">
+            <TagsInput 
+              tags={garmentData.tags} 
+              onChange={(value) => handleInputChange("tags", value)} 
+            />
+          </div>
+
+          {/* Enhanced Details Section */}
+          <EnhancedDetailsFields 
+            garmentData={garmentData} 
+            handleInputChange={handleInputChange} 
+          />
+          
+          <div style={{ border: '2px solid green', padding: '10px', marginTop: '20px' }}>
+            DEBUG: End of form - Enhanced Details should be visible above this
+          </div>
+        </form>
       </div>
 
       {/* Fixed Submit Button */}

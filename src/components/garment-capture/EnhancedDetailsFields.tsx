@@ -1,13 +1,7 @@
 
 import React from "react";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { GarmentData } from "./types";
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
 
 interface EnhancedDetailsFieldsProps {
   garmentData: GarmentData;
@@ -15,6 +9,7 @@ interface EnhancedDetailsFieldsProps {
 }
 
 export const EnhancedDetailsFields = ({ garmentData, handleInputChange }: EnhancedDetailsFieldsProps) => {
+  console.log("EnhancedDetailsFields rendering", { garmentData });
   const seasons = ["Spring", "Summer", "Fall", "Winter", "All Seasons"];
   const occasions = ["Casual", "Work", "Formal", "Sport", "Evening", "Special"];
   const materials = ["Cotton", "Polyester", "Wool", "Silk", "Denim", "Leather", "Linen", "Blend"];
