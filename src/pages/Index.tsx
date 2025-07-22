@@ -57,7 +57,7 @@ const Index = () => {
   return (
     <div className={`h-screen flex flex-col bg-gray-50 ${isNative ? 'pt-safe-area-inset-top' : ''}`}>
       {/* Mobile Header */}
-      <div className="bg-purple-50 shadow-sm px-4 py-3">
+      <div className="sticky top-0 z-10 bg-purple-50 shadow-sm px-4 py-2 pt-safe-area-inset-top">
         <div className="flex items-center space-x-2">
           <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
           <h1 className="text-base font-normal text-purple-900">Closety</h1>
