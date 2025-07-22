@@ -38,29 +38,30 @@ export const CanvasModule = ({
   }, [onSelect]);
 
   const handleDrag = useCallback((e: any, d: { x: number; y: number }) => {
-    // For mobile, we can provide real-time feedback during drag
-    if (isMobile) {
-      // Throttle updates to prevent performance issues
-      const snappedPosition = snapToModules(
-        { x: d.x, y: d.y },
-        module.size,
-        otherModules,
-        15
-      );
-      onUpdatePosition(snappedPosition);
-    }
-  }, [isMobile, module.size, otherModules, onUpdatePosition]);
-
-  const handleDragStop = useCallback((e: any, d: { x: number; y: number }) => {
-    setIsDragging(false);
+    // Apply snapping during drag for real-time feedback
+    const canvasSize = isMobile ? { width: 1200, height: 600 } : { width: 800, height: 600 };
     const snappedPosition = snapToModules(
       { x: d.x, y: d.y },
       module.size,
       otherModules,
-      15
+      15,
+      canvasSize
     );
     onUpdatePosition(snappedPosition);
-  }, [module.size, otherModules, onUpdatePosition]);
+  }, [module.size, otherModules, onUpdatePosition, isMobile]);
+
+  const handleDragStop = useCallback((e: any, d: { x: number; y: number }) => {
+    setIsDragging(false);
+    const canvasSize = isMobile ? { width: 1200, height: 600 } : { width: 800, height: 600 };
+    const snappedPosition = snapToModules(
+      { x: d.x, y: d.y },
+      module.size,
+      otherModules,
+      15,
+      canvasSize
+    );
+    onUpdatePosition(snappedPosition);
+  }, [module.size, otherModules, onUpdatePosition, isMobile]);
 
   const handleResizeStop = useCallback((
     e: any,
@@ -164,7 +165,6 @@ export const CanvasModule = ({
       minWidth={moduleStyle.minSize.width}
       minHeight={moduleStyle.minSize.height}
       enableUserSelectHack={false}
-      dragHandleClassName={isMobile ? "drag-handle-mobile" : "drag-handle"}
       enableResizing={{
         top: false,
         right: true,
@@ -190,8 +190,8 @@ export const CanvasModule = ({
         {/* Pattern overlay */}
         {renderPattern()}
         
-        {/* Header - Enhanced for mobile touch */}
-        <div className={`relative z-10 p-2 flex items-center justify-between bg-black/10 backdrop-blur-sm ${isMobile ? 'drag-handle-mobile min-h-[44px] touch-manipulation' : 'drag-handle'}`}>
+        {/* Header - Enhanced for mobile touch but not a drag handle */}
+        <div className={`relative z-10 p-2 flex items-center justify-between bg-black/10 backdrop-blur-sm ${isMobile ? 'min-h-[44px] touch-manipulation' : ''}`}>
           <div className="flex items-center gap-2">
             <Move size={isMobile ? 16 : 12} className="opacity-60" />
             <span className={`${isMobile ? 'text-sm' : 'text-xs'} font-medium capitalize`}>

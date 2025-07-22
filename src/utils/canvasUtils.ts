@@ -73,20 +73,23 @@ export const MODULE_STYLES = {
   }
 } as const;
 
+// Remove grid snapping function - no longer used
 export const snapToGrid = (value: number, gridSize: number = CANVAS_CONFIG.gridSize): number => {
   return Math.round(value / gridSize) * gridSize;
 };
 
+// Enhanced edge snapping with canvas boundary clamping
 export const snapToModules = (
   position: CanvasPosition,
   size: CanvasSize,
   modules: CanvasModule[],
-  snapDistance: number = 15
+  snapDistance: number = 15,
+  canvasSize: CanvasSize = { width: CANVAS_CONFIG.width, height: CANVAS_CONFIG.height }
 ): CanvasPosition => {
   let x = position.x;
   let y = position.y;
 
-  // en yakın adayları tutacak
+  // Find best snap candidates
   let bestX = x, bestY = y;
   let minDX = snapDistance + 1, minDY = snapDistance + 1;
 
@@ -96,14 +99,14 @@ export const snapToModules = (
     const top    = mod.position.y;
     const bottom = top + mod.size.height;
 
-    // X ekseninde: sol kenarımız -> mod.right, sağ kenarımız -> mod.left
+    // X-axis snapping: left edge to module right, right edge to module left
     [[ right, Math.abs(x - right) ],
      [ left - size.width, Math.abs(x + size.width - left) ]]
       .forEach(([cand, delta]) => {
         if (delta < minDX) { minDX = delta; bestX = cand as number; }
       });
 
-    // Y ekseninde: üst kenarımız -> mod.bottom, alt kenarımız -> mod.top
+    // Y-axis snapping: top edge to module bottom, bottom edge to module top
     [[ bottom, Math.abs(y - bottom) ],
      [ top - size.height, Math.abs(y + size.height - top) ]]
       .forEach(([cand, delta]) => {
@@ -111,13 +114,13 @@ export const snapToModules = (
       });
   });
 
-  // Eğer kenara kadar yakınsak snap et, değilse özgür kal
+  // Apply snapping if within distance
   x = minDX <= snapDistance ? bestX : x;
   y = minDY <= snapDistance ? bestY : y;
 
-  // Canvas dışına çıkmasın
-  x = Math.max(0, Math.min(x, CANVAS_CONFIG.width  - size.width));
-  y = Math.max(0, Math.min(y, CANVAS_CONFIG.height - size.height));
+  // Clamp to canvas boundaries
+  x = Math.max(0, Math.min(x, canvasSize.width - size.width));
+  y = Math.max(0, Math.min(y, canvasSize.height - size.height));
 
   return { x, y };
 };
@@ -142,15 +145,16 @@ export const isPositionValid = (
   );
 };
 
+// Updated to use no grid snapping, only check valid positions
 export const findBestCanvasPosition = (
   size: CanvasSize,
   modules: CanvasModule[],
   canvasSize: CanvasSize = { width: CANVAS_CONFIG.width, height: CANVAS_CONFIG.height }
 ): CanvasPosition | null => {
-  const gridSize = CANVAS_CONFIG.gridSize;
+  const step = 10; // Use smaller step for smoother placement
   
-  for (let y = 0; y <= canvasSize.height - size.height; y += gridSize) {
-    for (let x = 0; x <= canvasSize.width - size.width; x += gridSize) {
+  for (let y = 0; y <= canvasSize.height - size.height; y += step) {
+    for (let x = 0; x <= canvasSize.width - size.width; x += step) {
       const position = { x, y };
       if (isPositionValid(position, size, modules, canvasSize)) {
         return position;

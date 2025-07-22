@@ -106,7 +106,7 @@ export const MobileClosetBuilder = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="w-full h-screen flex flex-col bg-gray-50 overflow-auto" style={{ touchAction: 'pan-x pan-y' }}>
       {/* Mobile Header */}
       <div className="bg-white p-4 border-b border-gray-200 flex-shrink-0">
         <h1 className="text-lg font-bold text-gray-800 mb-2">Digital Closet</h1>
@@ -188,10 +188,13 @@ export const MobileClosetBuilder = () => {
           </div>
         </div>
 
-        {/* Enhanced Canvas with proper height */}
-        <div className="flex-1 relative bg-gradient-to-b from-gray-50 to-gray-100 overflow-auto min-h-0">
+        {/* Enhanced Canvas with proper mobile container */}
+        <div 
+          className="flex-1 relative bg-gradient-to-b from-gray-50 to-gray-100 overflow-auto min-h-0"
+          style={{ touchAction: 'pan-x pan-y' }}
+        >
           <div 
-            className="relative touch-action-pan-x touch-action-pan-y"
+            className="relative"
             style={{ 
               width: '1200px',
               height: '600px',
