@@ -136,8 +136,8 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
   return (
     <div className="max-w-md mx-auto px-4">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-foreground mb-2">Add New Garment</h2>
-        <p className="text-sm text-muted-foreground">Capture a photo and add essential details</p>
+        <h2 className="screen-title">Add New Garment</h2>
+        <p className="screen-subtitle">Capture a photo and add essential details</p>
       </div>
 
       {/* Photo Upload Card */}
