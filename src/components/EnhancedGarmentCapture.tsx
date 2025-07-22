@@ -96,7 +96,7 @@ export const EnhancedGarmentCapture = () => {
       </div>
 
       {/* Scrollable Content */}
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-3 pb-32">
           <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
             {/* Photo Upload Section */}
@@ -150,7 +150,7 @@ export const EnhancedGarmentCapture = () => {
             />
           </form>
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Fixed Submit Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border p-3 shadow-md">
