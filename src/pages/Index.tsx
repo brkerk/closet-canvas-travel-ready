@@ -5,7 +5,7 @@ import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
 import { NativeFeatures } from "@/services/nativeFeatures";
-import { Camera, Shirt, Home, Sparkles } from "lucide-react";
+import { Camera, Shirt, Home, Sparkles, ArrowLeft } from "lucide-react";
 import closetLogo from "@/assets/closety-logo.png";
 
 const Index = () => {
@@ -59,6 +59,15 @@ const Index = () => {
       {/* Mobile Header */}
       <div className="sticky top-0 z-10 bg-purple-50 shadow-sm px-4 py-2 pt-safe-area-inset-top">
         <div className="flex items-center space-x-2">
+          {activeTab !== "capture" && (
+            <button 
+              onClick={() => setActiveTab("capture")} 
+              className="mr-3"
+              aria-label="Back"
+            >
+              <ArrowLeft size={20} className="text-purple-900" />
+            </button>
+          )}
           <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
           <h1 className="text-base font-normal text-purple-900">Closety</h1>
           <small className="text-xs text-gray-600 ml-2">Smart wardrobe management</small>
