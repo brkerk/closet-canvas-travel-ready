@@ -25,7 +25,7 @@ export class ImageClassifierService {
       
       this.imageClassifier = await pipeline(
         'image-classification',
-        'microsoft/resnet-50',
+        'onnx-community/mobilenetv4_conv_small.e2400_r224_in1k',
         { device: 'webgpu' }
       );
       
