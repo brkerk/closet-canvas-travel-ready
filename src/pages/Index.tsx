@@ -5,7 +5,7 @@ import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
 import { NativeFeatures } from "@/services/nativeFeatures";
-import { Camera, Shirt, Home, Sparkles, ArrowLeft } from "lucide-react";
+import { Camera, Shirt, Home, Sparkles, ArrowLeft, User } from "lucide-react";
 import closetLogo from "@/assets/closety-logo.png";
 
 const Index = () => {
@@ -58,22 +58,30 @@ const Index = () => {
     <div className={`h-screen flex flex-col bg-gray-50 ${isNative ? 'pt-safe-area-inset-top' : ''}`}>
       {/* Mobile Header */}
       <div className="sticky top-0 z-10 bg-purple-50 shadow-sm px-4 py-2 pt-safe-area-inset-top">
-        <div className="flex items-center space-x-2">
-          {activeTab !== "capture" && (
-            <button 
-              onClick={() => setActiveTab("capture")} 
-              className="mr-3"
-              aria-label="Back"
-            >
-              <ArrowLeft size={20} className="text-purple-900" />
-            </button>
-          )}
-          <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
-          <h1 className="text-base font-normal text-purple-900">Closety</h1>
-          <small className="text-xs text-gray-600 ml-2">Smart wardrobe management</small>
-          {isNative && (
-            <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Native App" />
-          )}
+        <div className="flex items-center justify-between">
+          {/* Left: Back button or menu */}
+          <div className="w-8">
+            {activeTab !== "capture" && (
+              <button 
+                onClick={() => setActiveTab("capture")} 
+                aria-label="Back"
+              >
+                <ArrowLeft size={20} className="text-purple-900" />
+              </button>
+            )}
+          </div>
+          
+          {/* Center: Logo + Name + Subtitle */}
+          <div className="flex items-center space-x-2 flex-1 justify-center">
+            <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
+            <h1 className="text-base font-normal text-purple-900">Closety</h1>
+            <small className="text-xs text-gray-600">Smart wardrobe management</small>
+          </div>
+          
+          {/* Right: User/Profile icon */}
+          <div className="w-8 flex justify-end">
+            <User size={20} className="text-purple-900" />
+          </div>
         </div>
       </div>
 
