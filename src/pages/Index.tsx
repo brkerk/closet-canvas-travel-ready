@@ -6,6 +6,7 @@ import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
 import { NativeFeatures } from "@/services/nativeFeatures";
 import { Camera, Shirt, Home, Sparkles } from "lucide-react";
+import closetLogo from "@/assets/closety-logo.png";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("capture");
@@ -57,13 +58,12 @@ const Index = () => {
     <div className={`h-screen flex flex-col bg-gray-50 ${isNative ? 'pt-safe-area-inset-top' : ''}`}>
       {/* Mobile Header */}
       <div className="bg-purple-50 shadow-sm px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">Closety</h1>
-            <p className="text-sm text-gray-600">Smart wardrobe management</p>
-          </div>
+        <div className="flex items-center space-x-2">
+          <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
+          <h1 className="text-lg font-semibold text-purple-800">Closety</h1>
+          <small className="text-gray-600 ml-8">Smart wardrobe management</small>
           {isNative && (
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Native App" />
+            <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Native App" />
           )}
         </div>
       </div>
