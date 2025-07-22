@@ -134,7 +134,7 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
   };
 
   return (
-    <div className="max-w-md mx-auto px-4">
+    <div className="max-w-md mx-auto px-4 form-container">
       <div className="text-center mb-6">
         <h2 className="screen-title">Add New Garment</h2>
         <p className="screen-subtitle">Capture a photo and add essential details</p>
@@ -171,7 +171,7 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
       <div className="card">
         <h3 className="section-title font-medium text-foreground">Essential Details</h3>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form id="garment-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Name Field */}
             <FormField
               control={form.control}
@@ -242,30 +242,33 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
               </div>
             </div>
 
-            {/* Button Group - Save primary, Add Details secondary */}
-            <div className="space-y-3 pt-4">
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save to Closet
-              </Button>
-              
-              <Button
+            {/* Secondary Flow - Add Details Link */}
+            <div className="text-center mt-4">
+              <button
                 type="button"
-                variant="ghost"
                 onClick={handleEditDetails}
-                className="w-full text-sm"
-                size="sm"
+                className="text-sm text-primary hover:underline"
               >
-                <Edit3 className="w-4 h-4 mr-2" />
-                Add Details
-              </Button>
+                Add more details
+              </button>
             </div>
           </form>
         </Form>
+      </div>
+
+      {/* Sticky Footer Button */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t">
+        <div className="max-w-md mx-auto">
+          <button
+            type="submit"
+            form="garment-form"
+            onClick={form.handleSubmit(onSubmit)}
+            className="w-full h-14 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 active:bg-primary/85 transition-all flex items-center justify-center gap-2"
+          >
+            <Save size={24} />
+            Save to Closet
+          </button>
+        </div>
       </div>
     </div>
   );
