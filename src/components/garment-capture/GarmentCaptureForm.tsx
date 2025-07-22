@@ -256,16 +256,19 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
         </Form>
       </div>
 
-      {/* Sticky Footer Button */}
+      {/* Sticky Footer Button - positioned above bottom navigation */}
       <div 
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background border-t border-border"
-        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+        className="fixed left-0 right-0 z-40 p-4 bg-background border-t border-border"
+        style={{ 
+          bottom: '80px', // Account for bottom navigation height
+          paddingBottom: '16px'
+        }}
       >
         <div className="max-w-md mx-auto">
           <button
             type="button"
             onClick={form.handleSubmit(onSubmit)}
-            className="w-full h-14 font-medium rounded-lg text-white transition-all flex items-center justify-center gap-2"
+            className="w-full h-14 font-medium rounded-lg text-white transition-all flex items-center justify-center gap-2 shadow-lg"
             style={{ 
               backgroundColor: 'hsl(var(--color-primary))',
               fontSize: '16px'
