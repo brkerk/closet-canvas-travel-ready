@@ -9,7 +9,6 @@ interface EnhancedDetailsFieldsProps {
 }
 
 export const EnhancedDetailsFields = ({ garmentData, handleInputChange }: EnhancedDetailsFieldsProps) => {
-  console.log("EnhancedDetailsFields rendering", { garmentData });
   const seasons = ["Spring", "Summer", "Fall", "Winter", "All Seasons"];
   const occasions = ["Casual", "Work", "Formal", "Sport", "Evening", "Special"];
   const materials = ["Cotton", "Polyester", "Wool", "Silk", "Denim", "Leather", "Linen", "Blend"];

@@ -85,8 +85,6 @@ export const EnhancedGarmentCapture = () => {
 
   const isSubmitDisabled = !image || !garmentData.name || !garmentData.color;
 
-  console.log("EnhancedGarmentCapture rendering");
-  
   return (
     <div className="min-h-screen bg-background">
       {/* Fixed Header */}
@@ -100,7 +98,6 @@ export const EnhancedGarmentCapture = () => {
       {/* Scrollable Content */}
       <div className="p-3 pb-32">
         <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
-          <div style={{ border: '2px solid red', padding: '10px' }}>DEBUG: Form container - Scroll should work now</div>
           {/* Photo Upload Section */}
           <PhotoUploadCard 
             image={image}
@@ -150,10 +147,6 @@ export const EnhancedGarmentCapture = () => {
             garmentData={garmentData} 
             handleInputChange={handleInputChange} 
           />
-          
-          <div style={{ border: '2px solid green', padding: '10px', marginTop: '20px' }}>
-            DEBUG: End of form - Enhanced Details should be visible above this
-          </div>
         </form>
       </div>
 
