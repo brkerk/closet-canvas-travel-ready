@@ -6,33 +6,43 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Updated color palette based on specifications */
+    --color-bg: 240 15% 97%;
+    --color-card: 0 0% 100%;
+    --color-primary: 262 35% 18%;
+    --color-secondary: 174 44% 29%;
+    --color-text-heading: 0 0% 7%;
+    --color-text-body: 0 0% 27%;
+    --color-border: 240 6% 90%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Semantic color mappings */
+    --background: var(--color-bg);
+    --foreground: var(--color-text-body);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --card: var(--color-card);
+    --card-foreground: var(--color-text-body);
 
-    --primary: 262 83% 26%;
+    --popover: var(--color-card);
+    --popover-foreground: var(--color-text-body);
+
+    --primary: var(--color-primary);
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 178 76% 35%;
+    --secondary: var(--color-secondary);
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 6% 95%;
+    --muted-foreground: var(--color-text-body);
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 240 6% 95%;
+    --accent-foreground: var(--color-text-heading);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 28% 82%;
-    --input: 215 28% 82%;
-    --ring: 262 83% 26%;
+    --border: var(--color-border);
+    --input: var(--color-border);
+    --ring: var(--color-primary);
 
     --radius: 0.5rem;
 
