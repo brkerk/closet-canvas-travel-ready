@@ -5,7 +5,7 @@ import { EnhancedGarmentCapture } from "@/components/EnhancedGarmentCapture";
 import { GarmentCatalog } from "@/components/GarmentCatalog";
 import { SmartOutfitRecommendations } from "@/components/SmartOutfitRecommendations";
 import { NativeFeatures } from "@/services/nativeFeatures";
-import { Camera, Shirt, Home, Sparkles, ArrowLeft, User } from "lucide-react";
+import { Camera, Shirt, Home, Sparkles, User } from "lucide-react";
 import closetLogo from "@/assets/closety-logo.png";
 
 const Index = () => {
@@ -58,28 +58,16 @@ const Index = () => {
     <div className={`h-screen flex flex-col bg-gray-50 ${isNative ? 'pt-safe-area-inset-top' : ''}`}>
       {/* Mobile Header */}
       <div className="sticky top-0 z-10 bg-purple-50 shadow-sm px-4 py-2 pt-safe-area-inset-top">
-        <div className="flex items-center justify-between">
-          {/* Left: Back button or menu */}
-          <div className="w-8">
-            {activeTab !== "capture" && (
-              <button 
-                onClick={() => setActiveTab("capture")} 
-                aria-label="Back"
-              >
-                <ArrowLeft size={20} className="text-purple-900" />
-              </button>
-            )}
-          </div>
-          
+        <div className="flex items-center justify-center">
           {/* Center: Logo + Name + Subtitle */}
-          <div className="flex items-center space-x-2 flex-1 justify-center">
+          <div className="flex items-center space-x-2">
             <img src={closetLogo} alt="Closety logo" className="w-6 h-6" />
             <h1 className="text-base font-normal text-purple-900">Closety</h1>
             <small className="text-xs text-gray-600">Smart wardrobe management</small>
           </div>
           
           {/* Right: User/Profile icon */}
-          <div className="w-8 flex justify-end">
+          <div className="absolute right-4">
             <User size={20} className="text-purple-900" />
           </div>
         </div>
