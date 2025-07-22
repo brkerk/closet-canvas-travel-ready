@@ -56,7 +56,7 @@ const Index = () => {
   return (
     <div className={`h-screen flex flex-col bg-gray-50 ${isNative ? 'pt-safe-area-inset-top' : ''}`}>
       {/* Mobile Header */}
-      <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
+      <div className="bg-purple-50 shadow-sm px-4 py-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-800">Closety</h1>
