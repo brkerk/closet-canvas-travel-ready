@@ -257,13 +257,19 @@ export const GarmentCaptureForm = ({ onSave, onEditDetails }: GarmentCaptureForm
       </div>
 
       {/* Sticky Footer Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t">
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background border-t border-border"
+        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+      >
         <div className="max-w-md mx-auto">
           <button
-            type="submit"
-            form="garment-form"
+            type="button"
             onClick={form.handleSubmit(onSubmit)}
-            className="w-full h-14 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 active:bg-primary/85 transition-all flex items-center justify-center gap-2"
+            className="w-full h-14 font-medium rounded-lg text-white transition-all flex items-center justify-center gap-2"
+            style={{ 
+              backgroundColor: 'hsl(var(--color-primary))',
+              fontSize: '16px'
+            }}
           >
             <Save size={24} />
             Save to Closet

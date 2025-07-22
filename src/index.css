@@ -162,6 +162,6 @@
 
   /* Add bottom padding to prevent content from being hidden behind sticky footer */
   .form-container {
-    padding-bottom: 100px;
+    padding-bottom: 120px;
   }
 }
